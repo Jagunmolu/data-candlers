@@ -1,0 +1,17 @@
+# Virtual environment
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Raw downloads are reproducible via scripts/fetch_data.py; keep only the provenance log
+data/raw/**
+!data/raw/
+!data/raw/provenance.csv
+data/interim/
+
+# OS and editor junk
+.DS_Store
+._*
+Thumbs.db
+.vscode/
