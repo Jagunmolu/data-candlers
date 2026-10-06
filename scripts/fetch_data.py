@@ -22,6 +22,7 @@ UA = {"User-Agent": "Mozilla/5.0 (datathon research; contact via repo)"}
 
 HDX = "https://data.humdata.org/dataset"
 DNEMIS = "https://emis.education.gov.ng/portal"
+KAGGLE = "https://www.kaggle.com/api/v1/datasets/download"
 
 # (relative path under data/raw, URL, folder to unzip into or None)
 SOURCES = [
@@ -74,6 +75,20 @@ SOURCES = [
         "mics/unicef_nigeria_education_fact_sheets_2023.pdf",
         "https://unicef.org/nigeria/media/9211/file/Nigeria%20Education%20Fact%20Sheets.pdf",
         None,
+    ),
+    # Kaggle mirror of the official NMIS 2014 release (energydata.info, CC BY 4.0), which
+    # blocks scripted downloads. Kaggle's public download endpoint needs no login.
+    (
+        "kaggle/educational-facilities-in-nigeria.zip",
+        f"{KAGGLE}/ayeniibukun/educational-facilities-in-nigeria",
+        "kaggle/educational-facilities-in-nigeria",
+    ),
+    # Community transcription of MICS6 2021 state tables; cross-check for our own
+    # extraction from the UNICEF fact sheets, never a primary source.
+    (
+        "kaggle/nigeria-education-access-and-outcomes-by-state-2021.zip",
+        f"{KAGGLE}/tinaukabi/nigeria-education-access-and-outcomes-by-state-2021",
+        "kaggle/nigeria-education-access-and-outcomes-by-state-2021",
     ),
 ]
 

@@ -15,3 +15,12 @@ Dated record of decisions, dead ends and reasons. Newest entries at the bottom o
 - DNEMIS quality: 101 LGAs returned under half their expected census forms; Rivers, Cross River and Nasarawa are near-blind. Decision: rank only LGAs passing completeness and plausibility checks, and list the rest as "insufficient data" with the reason, rather than imputing.
 - Wrote `scripts/fetch_data.py` so all raw data can be re-downloaded, with a provenance log (URL, date, size, SHA-256).
 - Proposed scope: see `docs/DATA_AUDIT.md`.
+
+## Tuesday 6 October 2026 (scope locked)
+
+- **Scope locked:** proceed as proposed. Use DNEMIS data with attribution and a note that no explicit licence is stated.
+- Evaluated three further Kaggle datasets. All downloaded without login.
+  - NMIS education facilities (2009-2014): recognised as a mirror of the official NMIS release (CC BY 4.0, energydata.info). The official host blocks scripted downloads, so we keep the Kaggle copy and cite the official source. A quick check gives Spearman 0.57 between 2014 and 2024 LGA learner-teacher ratios. **Kept** as a persistent-shortage signal and 2014 facility-condition context.
+  - MICS6 2021 state workbook: a community transcription of the same UNICEF tables we already hold. **Kept as a cross-check** for our own extraction, not as a primary source.
+  - JAMB 2024 student performance: synthetic by the author's own description, no geography. **Rejected and deleted.**
+- Added both kept Kaggle sources to `scripts/fetch_data.py` and the provenance log. Pinned scipy.

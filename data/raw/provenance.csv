@@ -21,3 +21,5 @@ dnemis/fact_typeown.parquet,https://emis.education.gov.ng/portal/data/census/fac
 dnemis/fact.parquet,https://emis.education.gov.ng/portal/data/census/fact/c7b39c9c32ba5e0dce5e0e9f2a288c79/fact.parquet,2026-10-04,147338,7fd5ae66c1557c74d7cd88912464cae4ca33815700992bf70e8599272baac671
 dnemis/ou.parquet,https://emis.education.gov.ng/portal/data/census/ou/58331b859583c87ea49c3a0dad9499bc/ou.parquet,2026-10-04,25682,6b58973ad886ac098f561ab495f71d821089d67aecbeb85ca7a4532963665dab
 dnemis/pe.parquet,https://emis.education.gov.ng/portal/data/census/pe/9cfd8dc4165763c0334362174a98faa9/pe.parquet,2026-10-04,789,a362928547e24b8e17ba36c856bbfdf17b9ddaae0784c8826d378f5500cb330b
+kaggle/educational-facilities-in-nigeria.zip,https://www.kaggle.com/api/v1/datasets/download/ayeniibukun/educational-facilities-in-nigeria,2026-10-06,11328418,5cb141989d6968eb257d4e9a4cddd79e6ae6ea3ba5aefc5d3bc5b889e2049a79
+kaggle/nigeria-education-access-and-outcomes-by-state-2021.zip,https://www.kaggle.com/api/v1/datasets/download/tinaukabi/nigeria-education-access-and-outcomes-by-state-2021,2026-10-06,443435,862beaf455684b15add6f596b35d172ac7790f6299b8383226c3e5a44bf29ee9

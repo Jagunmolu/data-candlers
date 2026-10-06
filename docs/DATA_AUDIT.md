@@ -16,6 +16,9 @@ Audit date: Sunday 4 October 2026. Internet access from the build environment: *
 | H | UNICEF Nigeria Education Fact Sheets 2023 (MICS6 2021) | 37 states | 2021 | GO (validation only) | Out-of-school rate, foundational skills |
 | I | HOT OpenStreetMap education facilities | points | 2026 | No-go | Volunteer coverage, too uneven to rank on |
 | J | NBS 2006 National School Census microdata | LGA | 2006 | No-go | Too old, registration required |
+| K | NMIS education facility survey (Kaggle mirror) | 98,667 schools, 772 LGAs | 2009-2014 | **GO (secondary)** | "Persistent shortage" signal and 2014 facility conditions |
+| L | MICS6 2021 state tables workbook (Kaggle) | 37 states | 2021 | Cross-check only | Second transcription to reconcile our extraction of H |
+| M | "Students Performance in 2024 JAMB" (Kaggle) | individual rows, no geography | n/a | **Rejected, deleted** | Synthetic by the author's own description |
 
 ## Source detail
 
@@ -64,6 +67,28 @@ Audit date: Sunday 4 October 2026. Internet access from the build environment: *
 - URL: https://unicef.org/nigeria/media/9211/file/Nigeria%20Education%20Fact%20Sheets.pdf. 74 pages, mostly text layer.
 - State tables: out-of-school rates (pp. 31-32), completion (p. 9), foundational reading and numeracy (p. 23, may need visual extraction).
 - Decision: **validation only**, never a model input.
+
+## Additions reviewed on 6 October 2026 (Kaggle leads)
+
+All three downloaded without a Kaggle login via `https://www.kaggle.com/api/v1/datasets/download/<owner>/<slug>`.
+
+### K. Educational facilities in Nigeria (ayeniibukun) = NMIS 2014
+- Kaggle URL: https://www.kaggle.com/datasets/ayeniibukun/educational-facilities-in-nigeria (listed as Apache 2.0, no description).
+- Identified as a mirror of the official **Nigeria MDG Information System (NMIS) education facility data**, collected by OSSAP-MDGs with Columbia University's Sustainable Engineering Lab. Same row count (98,667) and fields as the official release on energydata.info, licensed **CC BY 4.0**: https://energydata.info/dataset/nigeria-nmis-education-facility-data-2014. The official host returns 403 to scripts, so we keep the Kaggle bytes and cite the official release as the source.
+- Survey dates 2009-2014 (mostly 2012 and 2014). 772 LGAs in 37 states. Per school: teachers, learners, classrooms, toilets, teachers with NCE, improved water, improved sanitation, grid electricity, chalkboard in every classroom, coordinates, LGA key (`state_lga`).
+- Fill rates: teachers 98%, learners 95%, classrooms 97%.
+- Quick test: public learner-teacher ratio by LGA in 2014 vs DNEMIS 2024, rough name match on 682 LGAs, **Spearman rho = 0.57**. Shortages persist, and an independent survey corroborates the 2024 census.
+- Decision: **secondary input**. (1) A "persistent shortage" flag for LGAs short of teachers in both 2014 and 2024, which also raises the confidence grade when two independent sources agree. (2) LGA facility conditions (water, sanitation, power) shown as 2014 context in the LGA detail view, never in the headline 2024 gap.
+
+### L. Nigeria Education Access and Outcomes by State 2021 (tinaukabi)
+- Kaggle URL: https://www.kaggle.com/datasets/tinaukabi/nigeria-education-access-and-outcomes-by-state-2021 (licence unknown).
+- Not a UBEC digest, despite the label it was shared under. It is a student analysis workbook transcribing MICS6 2021 state tables (out-of-school, dropout, foundational reading and numeracy by state and sex, location and wealth) plus World Bank and UNESCO national series.
+- Decision: **cross-check only**. Our primary validation source stays the UNICEF fact sheet (H). We extract H ourselves and reconcile against this workbook; any disagreement is logged.
+
+### M. Students Performance in 2024 JAMB (idowuadamo)
+- Kaggle URL: https://www.kaggle.com/datasets/idowuadamo/students-performance-in-2024-jamb
+- The author describes it as "synthetically generated". 5,000 rows with no state or LGA field, so it cannot attach to any geography in this tool.
+- Decision: **rejected and deleted** from `data/raw`. Using it would add a synthetic input with no link to the planning question.
 
 ## Scope consequence
 
