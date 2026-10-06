@@ -1,0 +1,133 @@
+adm2_pcode,adm2_name,adm1_name,not_ranked_reason
+NG003002,Eastern Obolo,Akwa Ibom,Only 0% of schools returned census forms
+NG003013,Ikot Abasi,Akwa Ibom,Reported learners are only 13% of the projected school-age population
+NG004002,Anambra East,Anambra,Only 15% of schools returned census forms
+NG004003,Anambra West,Anambra,"No learner, teacher or classroom count reported; Census return rate not reported"
+NG004004,Anaocha,Anambra,Reported learners are only 11% of the projected school-age population
+NG004006,Awka South,Anambra,Only 42% of schools returned census forms
+NG004010,Idemili North,Anambra,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG004011,Idemili South,Anambra,Only 2% of schools returned census forms
+NG004012,Ihiala,Anambra,"No learner, teacher or classroom count reported; Only 20% of schools returned census forms"
+NG004013,Njikoka,Anambra,Only 0% of schools returned census forms
+NG004019,Orumba North,Anambra,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG004020,Orumba South,Anambra,Only 10% of schools returned census forms
+NG005020,Zaki,Bauchi,Implausible ratio of 294 learners per teacher
+NG007004,Buruku,Benue,Only 29% of schools returned census forms
+NG007005,Gboko,Benue,Only 35% of schools returned census forms
+NG007006,Guma,Benue,Only 24% of schools returned census forms
+NG007007,Gwer East,Benue,Only 28% of schools returned census forms
+NG007009,Katsina-Ala,Benue,Only 49% of schools returned census forms
+NG007010,Konshisha,Benue,Only 1% of schools returned census forms
+NG007011,Kwande,Benue,Only 17% of schools returned census forms
+NG007012,Logo,Benue,Only 30% of schools returned census forms
+NG007013,Makurdi,Benue,Only 0% of schools returned census forms
+NG007015,Ogbadibo,Benue,Only 24% of schools returned census forms
+NG007017,Oju,Benue,Only 35% of schools returned census forms
+NG007018,Okpokwu,Benue,Only 30% of schools returned census forms
+NG007019,Oturkpo,Benue,Only 21% of schools returned census forms
+NG007020,Tarka,Benue,Only 39% of schools returned census forms
+NG007021,Ukum,Benue,Only 1% of schools returned census forms
+NG007022,Ushongo,Benue,Only 46% of schools returned census forms
+NG007023,Vandeikya,Benue,Only 45% of schools returned census forms
+NG008009,Gubio,Borno,Reported learners are only 3% of the projected school-age population
+NG008010,Guzamala,Borno,Reported learners are only 9% of the projected school-age population
+NG008017,Kukawa,Borno,Reported learners are only 4% of the projected school-age population
+NG008020,Magumeri,Borno,Reported learners are only 2% of the projected school-age population
+NG008022,Marte,Borno,Reported learners are only 8% of the projected school-age population
+NG008023,Mobbar,Borno,Reported learners are only 6% of the projected school-age population
+NG008025,Ngala,Borno,Reported learners are only 5% of the projected school-age population
+NG008026,Nganzai,Borno,Reported learners are only 14% of the projected school-age population
+NG009001,Abi,Cross River,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG009002,Akamkpa,Cross River,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG009003,Akpabuyo,Cross River,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG009005,Bakassi,Cross River,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG009006,Bekwara,Cross River,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG009007,Biase,Cross River,Only 16% of schools returned census forms
+NG009008,Boki,Cross River,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG009009,Calabar South,Cross River,Only 24% of schools returned census forms
+NG009010,Calabar-Municipal,Cross River,Only 30% of schools returned census forms
+NG009011,Etung,Cross River,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG009012,Ikom,Cross River,"No learner, teacher or classroom count reported; Only 1% of schools returned census forms"
+NG009013,Obanliku,Cross River,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG009014,Obubra,Cross River,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG009015,Obudu,Cross River,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG009016,Odukpani,Cross River,Only 0% of schools returned census forms; Implausible ratio of 3 learners per teacher
+NG009017,Ogoja,Cross River,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG009018,Yakurr,Cross River,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG009019,Yala,Cross River,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG010001,Aniocha North,Delta,Reported learners are only 14% of the projected school-age population
+NG010005,Ethiope East,Delta,Reported learners are only 14% of the projected school-age population
+NG010006,Ethiope West,Delta,Only 19% of schools returned census forms
+NG010011,Ndokwa East,Delta,Only 4% of schools returned census forms
+NG010021,Ukwuani,Delta,Reported learners are only 12% of the projected school-age population
+NG010022,Uvwie,Delta,"No learner, teacher or classroom count reported"
+NG012008,Etsako East,Edo,Census return rate not reported
+NG012009,Etsako West,Edo,Reported learners are only 8% of the projected school-age population
+NG012011,Ikpoba-Okha,Edo,Only 40% of schools returned census forms
+NG012015,Ovia South West,Edo,Only 37% of schools returned census forms
+NG012016,Owan East,Edo,Implausible ratio of 273 learners per teacher
+NG015002,Abuja Municipal,Federal Capital Territory,Only 47% of schools returned census forms
+NG020039,Tofa,Kano,Reported learners are 2.7x the projected school-age population
+NG021011,Dutsi,Katsina,Implausible ratio of 453 learners per teacher; Reported learners are 3.2x the projected school-age population
+NG021019,Kankara,Katsina,Only 34% of schools returned census forms
+NG023010,Kabba/Bunu,Kogi,Reported learners are only 9% of the projected school-age population
+NG025002,Ajeromi-Ifelodun,Lagos,Reported learners are only 14% of the projected school-age population
+NG026002,Awe,Nasarawa,Only 1% of schools returned census forms
+NG026003,Doma,Nasarawa,Only 0% of schools returned census forms
+NG026004,Karu,Nasarawa,Only 7% of schools returned census forms
+NG026005,Keana,Nasarawa,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG026006,Keffi,Nasarawa,Only 3% of schools returned census forms
+NG026007,Kokona,Nasarawa,Only 4% of schools returned census forms
+NG026008,Lafia,Nasarawa,Only 4% of schools returned census forms
+NG026009,Nasarawa,Nasarawa,"No learner, teacher or classroom count reported; Census return rate not reported"
+NG026010,Nasarawa-Eggon,Nasarawa,Only 0% of schools returned census forms
+NG026011,Obi,Nasarawa,Only 1% of schools returned census forms
+NG026012,Toto,Nasarawa,Only 0% of schools returned census forms
+NG026013,Wamba,Nasarawa,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG027002,Agwara,Niger,Only 42% of schools returned census forms
+NG027004,Borgu,Niger,Only 48% of schools returned census forms
+NG027015,Mariga,Niger,Only 48% of schools returned census forms
+NG027017,Mokwa,Niger,Only 43% of schools returned census forms
+NG027020,Rafi,Niger,Only 34% of schools returned census forms
+NG027022,Shiroro,Niger,Only 43% of schools returned census forms
+NG027024,Tafa,Niger,Only 41% of schools returned census forms
+NG028009,Ijebu North,Ogun,Reported learners are only 13% of the projected school-age population
+NG028016,Odeda,Ogun,Only 30% of schools returned census forms
+NG029009,Ifedore,Ondo,Reported learners are only 12% of the projected school-age population
+NG029013,Odigbo,Ondo,Reported learners are only 12% of the projected school-age population
+NG030003,Atakumosa East,Osun,Only 32% of schools returned census forms
+NG030005,Boluwaduro,Osun,"No learner, teacher or classroom count reported; Only 24% of schools returned census forms"
+NG030014,Ife South,Osun,Only 9% of schools returned census forms
+NG030016,Ifelodun,Osun,"No learner, teacher or classroom count reported; Only 3% of schools returned census forms"
+NG030018,Ilesha East,Osun,Only 7% of schools returned census forms
+NG030024,Obokun,Osun,Reported learners are only 14% of the projected school-age population
+NG030025,Odo-Otin,Osun,Only 36% of schools returned census forms
+NG032014,Qua'an Pan,Plateau,Only 44% of schools returned census forms
+NG032017,Wase,Plateau,Only 49% of schools returned census forms
+NG033001,Abua/Odual,Rivers,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG033002,Ahoada East,Rivers,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG033003,Ahoada West,Rivers,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG033004,Akuku Toru,Rivers,"No learner, teacher or classroom count reported; Only 5% of schools returned census forms"
+NG033005,Andoni,Rivers,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG033006,Asari-Toru,Rivers,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG033007,Bonny,Rivers,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG033008,Degema,Rivers,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG033009,Eleme,Rivers,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG033010,Emohua,Rivers,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG033011,Etche,Rivers,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG033012,Gokana,Rivers,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG033013,Ikwerre,Rivers,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG033014,Khana,Rivers,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG033015,Obia/Akpor,Rivers,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG033016,Ogba/Egbema/Ndoni,Rivers,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG033017,Ogu/Bolo,Rivers,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG033018,Okrika,Rivers,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG033019,Omumma,Rivers,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG033020,Opobo/Nkoro,Rivers,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG033021,Oyigbo,Rivers,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG033022,Port-Harcourt,Rivers,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG033023,Tai,Rivers,"No learner, teacher or classroom count reported; Only 0% of schools returned census forms"
+NG035003,Donga,Taraba,Only 41% of schools returned census forms
+NG035006,Ibi,Taraba,Reported learners are 3.0x the projected school-age population
+NG035012,Takum,Taraba,Reported learners are 2.6x the projected school-age population
+NG036014,Potiskum,Yobe,Reported learners are 3.1x the projected school-age population

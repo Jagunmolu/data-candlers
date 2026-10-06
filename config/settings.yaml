@@ -1,0 +1,71 @@
+# Settings for the LGA teacher and classroom gap index.
+# Everything a pilot institution might need to change lives here, not in code.
+
+lga_input:
+  # "dnemis" reads the 2024 Annual School Census parquet files in data/raw/dnemis.
+  # "csv" reads a fresher table from a partner (e.g. a SUBEB) using the column map below.
+  adapter: dnemis
+  csv:
+    path: data/raw/partner/lga_census.csv
+    vintage: "partner data"
+    # Our field name: the partner's column name. State and LGA names are crosswalked
+    # to OCHA P-codes with the same rules as DNEMIS.
+    columns:
+      state: state
+      lga: lga
+      learners: public_learners
+      teachers: public_teachers
+      classrooms: usable_classrooms
+      toilets: usable_toilets
+      reports_actual: census_returns_received
+      reports_expected: census_returns_expected
+
+standards:
+  # UBE standards. DNEMIS ships the same values in constants.parquet; the build
+  # checks they agree and stops if they do not.
+  learners_per_teacher: 35
+  learners_per_classroom: 35
+  learners_per_toilet: 30
+
+index:
+  # Base weights for the need score. Rationale: the decision is where to send
+  # teachers first, then where to build classrooms; sanitation is a weaker,
+  # noisier signal in the census.
+  weights:
+    teacher: 0.50
+    classroom: 0.35
+    toilet: 0.15
+  top_n: 20
+  stability:
+    draws: 1000
+    # Dirichlet concentration: weights are drawn as Dirichlet(concentration * base).
+    # 20 gives draws whose individual weights typically move by +/- 0.1.
+    concentration: 20
+    persistent_share: 0.80   # in the top 20 in at least 80% of draws
+    seed: 20261010
+
+confidence:
+  # Share of expected census forms actually returned (pre-primary and primary).
+  reporting_min_ranked: 0.50   # below this the LGA is not ranked
+  reporting_grade_a: 0.90
+  reporting_grade_b: 0.75
+  # Learners (all public levels) divided by the projected population aged 5-14.
+  # Public learners include pre-primary, senior secondary and integrated Qur'anic
+  # schools, and the population is projected from the 2006 census, so values well
+  # above 1 are common in fast-growing LGAs. Above the caveat level the LGA is
+  # still ranked but loses one grade; above the max it is not ranked.
+  coverage_caveat_above: 1.60
+  coverage_max_plausible: 2.50
+  coverage_min_plausible: 0.15   # only checked where reporting is at least grade A
+  ratio_max_plausible: 250       # learners per teacher
+  ratio_min_plausible: 5
+
+hidden_demand:
+  # Flag only, never part of the score: population projections are uncertain.
+  coverage_below: 0.40
+  reporting_at_least: 0.90
+
+persistence:
+  # "Persistent shortage": in the worst quartile of learner-teacher ratio in both
+  # the 2014 NMIS survey and the 2024 census.
+  quantile: 0.75

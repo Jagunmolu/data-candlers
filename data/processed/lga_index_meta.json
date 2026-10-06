@@ -1,0 +1,45 @@
+{
+  "vintage": "2024 Annual School Census",
+  "weights": {
+    "teacher": 0.5,
+    "classroom": 0.35,
+    "toilet": 0.15
+  },
+  "standards": {
+    "learners_per_teacher": 35,
+    "learners_per_classroom": 35,
+    "learners_per_toilet": 30
+  },
+  "n_lgas": 774,
+  "n_ranked": 642,
+  "grades": {
+    "A": 398,
+    "B": 156,
+    "Not ranked": 132,
+    "C": 88
+  },
+  "pca": {
+    "pc1_loadings": {
+      "teacher": 0.599,
+      "classroom": 0.616,
+      "toilet": 0.512
+    },
+    "pc1_variance_share": 0.771071272906614,
+    "spearman_index_vs_pc1": 0.987364494507107
+  },
+  "weight_draws_summary": {
+    "teacher": [
+      0.3263359522422977,
+      0.6762163492878643
+    ],
+    "classroom": [
+      0.17381117940920265,
+      0.5265365643305318
+    ],
+    "toilet": [
+      0.048511246147206866,
+      0.2928687708420046
+    ]
+  },
+  "n_persistent_top20": 15
+}

@@ -1,0 +1,27 @@
+# Hand-checked LGA name aliases. source,adm1_pcode,source_name,adm2_pcode,note
+source,adm1_pcode,source_name,adm2_pcode,note
+dnemis,NG028,Yewa South,NG028005,Egbado South was renamed Yewa South
+dnemis,NG028,Yewa North,NG028004,Egbado North was renamed Yewa North
+dnemis,NG017,Onuimo,NG017027,Spelling variant of Unuimo
+dnemis,NG015,Abuja Municipal Area Council,NG015002,AMAC is Abuja Municipal
+dnemis,NG017,Ezinihitte-Mbaise,NG017004,Ezinihitte LGA is also called Ezinihitte Mbaise
+dnemis,NG022,Danko-Wasagu,NG022019,Word order variant of Wasagu/Danko
+dnemis,NG005,Dambam,NG005004,Spelling variant of Damban
+dnemis,NG022,Arewa,NG022002,Arewa Dandi
+dnemis,NG031,Atisbo,NG031004,Atisbo LGA (Atigbo in COD-AB)
+nmis,NG028,yewa south,NG028005,Egbado South was renamed Yewa South
+nmis,NG028,yewa north,NG028004,Egbado North was renamed Yewa North
+nmis,NG017,onuimo,NG017027,Spelling variant of Unuimo
+nmis,NG015,municipal area council,NG015002,AMAC is Abuja Municipal
+nmis,NG005,dambam,NG005004,Spelling variant of Damban
+nmis,NG031,atisbo,NG031004,Atisbo LGA (Atigbo in COD-AB)
+nmis,NG033,emuoha,NG033010,Spelling variant of Emohua
+nmis,NG013,gbonyin,NG013002,Gbonyin is Aiyekire (Gbonyin)
+nmis,NG024,patigi,NG024016,Spelling variant of Pategi
+nmis,NG002,gayuk,NG002006,Spelling variant of Guyuk
+nmis,NG002,teungo,NG002019,Spelling variant of Toungo
+nmis,NG002,grie,NG002005,Spelling variant of Girei
+nmis,NG022,aliero,NG022001,Spelling variant of Aleiro
+nmis,NG020,gazewa,NG020017,Spelling variant of Gezawa
+nmis,NG036,bosari,NG036002,Spelling variant of Bursari
+nmis,NG010,ika north,NG010007,Ika North East

@@ -1,0 +1,4 @@
+source,source_name,reason
+nmis,anambra_onitsha,"Ambiguous: Anambra has Onitsha North and Onitsha South; NMIS key does not say which"
+nmis,oyo_oyo,"Ambiguous: Oyo State has Oyo East and Oyo West; NMIS key does not say which"
+nmis,ondo_ijaye,"No Ondo LGA called Ijaye; nearest unclaimed name (Ilaje) is not a safe match"

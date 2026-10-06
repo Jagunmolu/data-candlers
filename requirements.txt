@@ -6,6 +6,9 @@ pyarrow==25.0.1
 pyogrio==0.13.0
 pypdf==6.19.0
 pypdfium2==5.13.0
+pytest==8.4.2
+pyyaml==6.0.3
 requests==2.34.2
+scikit-learn==1.7.2
 scipy==1.16.2
 shapely==2.1.2
