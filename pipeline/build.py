@@ -8,6 +8,8 @@ import zipfile
 
 import geopandas as gpd
 import pandas as pd
+from shapely.geometry import MultiPolygon
+from shapely.geometry.polygon import orient
 
 from pipeline import extract_mics, extract_ubec, extract_waec, lens2, lga_index, validate
 from pipeline.paths import CONFIG, INTERIM, PROCESSED, RAW, REPORTS
@@ -20,8 +22,16 @@ def lga_geometry():
         with zipfile.ZipFile(RAW / "boundaries" / "nga_admin_boundaries.geojson.zip") as z:
             z.extractall(RAW / "boundaries" / "geojson")
     g = gpd.read_file(src)[["adm2_pcode", "geometry"]]
-    g["geometry"] = g.geometry.simplify(0.005, preserve_topology=True)
+    g["geometry"] = g.geometry.simplify(0.005, preserve_topology=True).map(_clockwise)
     return g
+
+
+def _clockwise(geom):
+    """Plotly's geo maps want clockwise outer rings; RFC 7946 GeoJSON uses the opposite,
+    which makes every polygon fill the whole world instead of the LGA."""
+    if geom.geom_type == "Polygon":
+        return orient(geom, sign=-1.0)
+    return MultiPolygon([orient(p, sign=-1.0) for p in geom.geoms])
 
 
 def state_context(lens2_df, state_need):
