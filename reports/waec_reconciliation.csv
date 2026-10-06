@@ -1,0 +1,20 @@
+state,year,candidate_type,page,check,detail
+Adamawa,2017,private,6.0,layout,could not read a 5 x 3 value grid
+Bauchi,2017,private,12.0,layout,could not read a 5 x 3 value grid
+Borno,2018,private,19.0,layout,could not read a 5 x 3 value grid
+Ebonyi,2018,private,25.0,sum_male_female,credit5_eng: 32 + 18 != 80
+Gombe,2017,private,32.0,layout,could not read a 5 x 3 value grid
+Gombe,2018,private,33.0,layout,could not read a 5 x 3 value grid
+Jigawa,2017,private,36.0,layout,could not read a 5 x 3 value grid
+Jigawa,2018,private,37.0,layout,could not read a 5 x 3 value grid
+Offshore,2016,private,80.0,layout,could not read a 5 x 3 value grid
+Offshore,2017,private,80.0,layout,could not read a 5 x 3 value grid
+Offshore,2018,private,81.0,layout,could not read a 5 x 3 value grid
+,2016,private,,national_page_total,"skipped: a state, offshore or national panel failed to parse"
+,2017,private,,national_page_total,"skipped: a state, offshore or national panel failed to parse"
+,2018,private,,national_page_total,"skipped: a state, offshore or national panel failed to parse"
+,2018,private,,summary_vs_national_page,"sat: national page 109,978 vs executive summary 109,798"
+,2018,public,,national_page_total,"sat: states + offshore sum to 1,554,030, national page says 1,571,536 (diff -17,506)"
+,2018,public,,national_page_total,"credit5_eng_maths: states + offshore sum to 747,292, national page says 756,726 (diff -9,434)"
+Borno,2017,public,,year_on_year,"candidates sat 14,514 in 2016 vs 28,006 in 2017"
+Taraba,2018,public,,year_on_year,"candidates sat 21,754 in 2017 vs 75 in 2018"

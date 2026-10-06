@@ -1,0 +1,2 @@
+table,state,year,check,detail
+enrolment_primary,ABIA,2020,parts_sum,"male 42,192 + female 68,077 != 137,552"

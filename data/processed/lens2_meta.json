@@ -1,0 +1,34 @@
+{
+  "n_states": 37,
+  "years": [
+    2016,
+    2017,
+    2018
+  ],
+  "excluded": [
+    "Taraba 2018: report prints 75 school candidates vs 21,754 in 2017; national page implies about 17,581"
+  ],
+  "predictors": [
+    "ltr_jss",
+    "share_qualified_jss",
+    "share_good_rooms_jss",
+    "lcr_jss",
+    "ltr_primary",
+    "share_qualified_primary"
+  ],
+  "standardised_coefficients": {
+    "ltr_jss": 0.113,
+    "share_qualified_jss": 0.791,
+    "share_good_rooms_jss": -1.426,
+    "lcr_jss": -1.155,
+    "ltr_primary": -0.521,
+    "share_qualified_primary": 0.829
+  },
+  "ridge_alpha": 92.36708571873865,
+  "loso_rmse_model": 17.326269415685214,
+  "loso_rmse_baseline": 17.17826657473505,
+  "loso_r2": -0.01730563611359104,
+  "interval_level": 0.9,
+  "interval_half_width": 31.88889653599911,
+  "n_flagged": 2
+}
