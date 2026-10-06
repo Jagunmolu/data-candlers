@@ -14,6 +14,7 @@ STEPS = [
     [sys.executable, "-m", "pipeline.build"],
     [sys.executable, "-m", "pytest", "-q"],
     [sys.executable, "scripts/render_figures.py"],
+    [sys.executable, "scripts/render_writeup.py"],
 ]
 
 for cmd in STEPS:

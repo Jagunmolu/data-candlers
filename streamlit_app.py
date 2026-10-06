@@ -57,6 +57,17 @@ st.markdown(
 )
 
 demo = st.query_params.get("demo") == "1"
+if demo:
+    st.info(
+        "**Demo path** (fixed data, same every time): "
+        "1. National top 20 and the totals. "
+        "2. Map: dark blue = need, grey = not ranked. "
+        "3. Pick **Kano** in State: a state planner's own list. "
+        "4. Back to All of Nigeria; in 'Look at one LGA' read **Olorunsogo, Oyo**. "
+        "5. Open 'Not ranked'. "
+        "6. Tab 'State outcome context'. "
+        "7. Tab 'Method, data and limits'."
+    )
 c1, c2, c3 = st.columns([2, 2, 1])
 state_options = ["All of Nigeria"] + sorted(lga.adm1_name.unique())
 state = c1.selectbox("State", state_options, index=0, help="Pick a state to see its own most-in-need LGAs.")
@@ -257,5 +268,3 @@ No synthetic data is used anywhere.
 """)
     st.caption(f"Grades: {meta['grades']}. Index settings live in config/settings.yaml; a partner's fresher census can be dropped in through the column map there.")
 
-if demo:
-    st.sidebar.markdown("**Demo mode**: fixed data, no filters changed. Walk the tabs left to right.")
