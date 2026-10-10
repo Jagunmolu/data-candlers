@@ -9,7 +9,10 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-from figures import need_map, state_scatter
+import yaml
+
+from figures import lga_scatter, moves_bar, need_map, state_scatter
+from pipeline import insights
 
 DATA = Path(__file__).parent / "data" / "processed"
 VINTAGE = "Source: Federal Ministry of Education, Annual School Census 2024 (public schools)."
@@ -32,15 +35,30 @@ def load():
     meta = json.loads((DATA / "lga_index_meta.json").read_text(encoding="utf-8"))
     lens2 = json.loads((DATA / "lens2_meta.json").read_text(encoding="utf-8"))
     checks = json.loads((DATA / "validation.json").read_text(encoding="utf-8"))
-    return lga, states, geo, meta, lens2, checks
+    ins = json.loads((DATA / "insights_meta.json").read_text(encoding="utf-8"))
+    return lga, states, geo, meta, lens2, checks, ins
 
 
 def fmt_int(x):
     return "n/a" if pd.isna(x) else f"{x:,.0f}"
 
 
+def fmt_pct(x):
+    return "n/a" if pd.isna(x) else f"{x:.0%}"
+
+
+def naira(x):
+    if pd.isna(x):
+        return "n/a"
+    for div, unit in [(1e12, " trillion"), (1e9, " billion"), (1e6, " million")]:
+        if abs(x) >= div:
+            return f"₦{x / div:,.1f}{unit}"
+    return f"₦{x:,.0f}"
+
+
 try:
-    lga, states, geo, meta, lens2, checks = load()
+    lga, states, geo, meta, lens2, checks, ins_meta = load()
+    CFG = yaml.safe_load((Path(__file__).parent / "config" / "settings.yaml").read_text(encoding="utf-8"))["insights"]
 except FileNotFoundError:
     st.error("Processed data not found. Run `python -m pipeline.build` first, then reload this page.")
     st.stop()
@@ -87,7 +105,10 @@ view = view.sort_values("need_score", ascending=False)
 top = view.head(TOP_N).copy()
 top.insert(0, "Position", range(1, len(top) + 1))
 
-tab1, tab2, tab3 = st.tabs(["Where to send teachers", "State outcome context", "Method, data and limits"])
+tab1, tab_move, tab_budget, tab_beyond, tab2, tab3 = st.tabs([
+    "Where to send teachers", "Move or hire?", "Budget planner", "Beyond the ratio", "State outcome context",
+    "Method, data and limits",
+])
 
 # ---------------------------------------------------------------- tab 1: decision view
 with tab1:
@@ -202,6 +223,64 @@ with tab1:
             hide_index=True, width="stretch")
         st.caption("These are listed rather than estimated. A planner should treat missing returns as a finding: "
                    "need here is unknown, not low.")
+
+# ---------------------------------------------------------------- tab: move or hire
+with tab_move:
+    st.markdown(
+        "**Can short LGAs be fixed by moving teachers from LGAs that have more than the standard needs?** "
+        "Teachers are employed by the state, so moves stay inside each state. Spare teachers go to the neediest LGAs first."
+    )
+    movable = st.slider(
+        "Share of spare teachers who could realistically move", 0, 100, int(100 * CFG["redeploy"]["movable_share"]), 5,
+        format="%d%%",
+        help="Spare = teachers above what 35:1 needs at current enrolment. 100% is the theoretical upper bound: "
+        "in practice subject, level, family and security limit who can move. No dataset records this, so you set it.",
+    ) / 100
+    moves = insights.allocate_moves(lga, movable)
+    lga_m = lga.join(moves)
+    by_state = insights.redeployment_by_state(lga, movable)
+    scope_m = by_state if state == "All of Nigeria" else by_state[by_state.adm1_name == state]
+    short, cov = scope_m.shortfall.sum(), scope_m.covered_by_moves.sum()
+    if scope_m.empty:
+        st.info(f"No ranked LGAs in {scope}, so moves cannot be assessed. See 'Not ranked' on the first tab.")
+    m1, m2, m3 = st.columns(3) if not scope_m.empty else (st.empty(),) * 3
+    m1.metric(f"Teacher shortfall, {scope}", fmt_int(short), help="Ranked LGAs only (grades A-C).")
+    m2.metric("Could be covered by moves", fmt_int(cov), help=f"With {movable:.0%} of spare teachers moving within the state.")
+    m3.metric("Still to hire", fmt_int(short - cov), delta=f"moves cover {cov / short:.0%}" if short else None,
+              delta_color="off")
+    if state == "All of Nigeria":
+        rd = ins_meta["redeploy"]
+        st.markdown(
+            f"Even if **every** teacher above the standard moved, moves would cover **{rd['share_covered']:.0%}** of the "
+            f"national shortfall ({rd['covered_by_moves']:,} of {rd['shortfall']:,}). Spare teachers sit mostly in "
+            f"{', '.join(rd['top_spare_states'])}, while the shortfall is elsewhere. In {rd['states_with_spare_over_shortfall']} "
+            "states, moving teachers could close the state's own gap; in the rest, **hiring is the main route**."
+        )
+        st.plotly_chart(moves_bar(by_state), width="stretch", config={"displayModeBar": False})
+        st.caption("Ranked LGAs only. Moves never cross state lines. " + VINTAGE)
+    else:
+        lg = lga_m[(lga_m.adm1_name == state) & lga_m.confidence.isin(["A", "B", "C"])]
+        st.subheader(f"LGAs in {state}: who gives, who receives")
+        t = pd.DataFrame({
+            "LGA": lg.adm2_name, "Learners per teacher": lg.ltr.round(0), "Teachers short": lg.teachers_needed,
+            "Spare teachers": lg.teachers_spare, "Receives from moves": lg.moved_in,
+            "Gives (approx.)": lg.moved_out.round(0), "Still to hire": lg.to_hire, "Need score": lg.need_score.round(0),
+        }).sort_values("Need score", ascending=False)
+        st.dataframe(t, hide_index=True, width="stretch")
+        st.download_button("Download this plan (CSV)", t.to_csv(index=False).encode("utf-8"),
+                           file_name=f"move_or_hire_{state.lower().replace(' ', '_')}.csv", mime="text/csv")
+        st.caption("Donors give in proportion to their spare teachers and keep enough for 35:1. " + VINTAGE)
+    with st.expander("All states"):
+        st.dataframe(
+            by_state.rename(columns={
+                "adm1_name": "State", "lgas_ranked": "LGAs ranked", "shortfall": "Teachers short",
+                "spare": "Spare teachers", "covered_by_moves": "Covered by moves", "to_hire": "Still to hire",
+                "share_covered": "Share covered"}),
+            hide_index=True, width="stretch",
+            column_config={"Share covered": st.column_config.ProgressColumn(format="percent", min_value=0, max_value=1)},
+        )
+    st.caption("A spare teacher may teach a subject or level that a short LGA does not need, so the moves shown "
+               "are an upper bound at your chosen share.")
 
 # ---------------------------------------------------------------- tab 2: state context
 with tab2:
