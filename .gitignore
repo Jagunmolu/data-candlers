@@ -15,3 +15,16 @@ data/interim/
 ._*
 Thumbs.db
 .vscode/
+
+# Private working files (kept locally, not part of the submission)
+CLAUDE.md
+DATATHON_PROMPT.md
+HUMAN_TODO.md
+docs/FORM_ANSWERS.md
+docs/QA_SHEET.md
+docs/VIDEO_SCRIPT.md
+docs/brief.txt
+docs/WRITEUP.html
+scripts/extract_brief.py
+Datathon Brief _ YDP Community.html
+Datathon Brief _ YDP Community_files/
