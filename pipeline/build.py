@@ -11,7 +11,7 @@ import pandas as pd
 from shapely.geometry import MultiPolygon
 from shapely.geometry.polygon import orient
 
-from pipeline import extract_mics, extract_ubec, extract_waec, lens2, lga_index, validate
+from pipeline import extract_mics, extract_ubec, extract_waec, insights, lens2, lga_index, validate
 from pipeline.paths import CONFIG, INTERIM, PROCESSED, RAW, REPORTS
 
 
@@ -55,6 +55,10 @@ def main():
     extract_mics.build()
 
     df, unmatched, meta = lga_index.build()
+    cfg = lga_index.load_settings()
+    df = insights.add_columns(df, cfg)
+    ins_meta = insights.summary(df, cfg)
+    (PROCESSED / "insights_meta.json").write_text(json.dumps(ins_meta, indent=2), encoding="utf-8")
     df.to_parquet(PROCESSED / "lga_index.parquet", index=False)
     (PROCESSED / "lga_index_meta.json").write_text(json.dumps(meta, indent=2, default=str), encoding="utf-8")
 
@@ -81,6 +85,7 @@ def main():
     print(f"Index vs PC1 Spearman: {meta['pca']['spearman_index_vs_pc1']:.3f}")
     print(f"Lens 2 LOSO RMSE: model {l2_meta['loso_rmse_model']:.1f} vs national-mean baseline {l2_meta['loso_rmse_baseline']:.1f}")
     print(f"Validation vs MICS 2021: {checks['mics_2021']}")
+    print(f"Insights: {json.dumps(ins_meta, indent=1)}")
     print(f"Unmatched source records: {len(unmatched)} (see reports/unmatched_records.csv)")
 
 

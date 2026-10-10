@@ -1,0 +1,61 @@
+{
+  "scope": "Ranked LGAs (grades A-C), public schools, 2024 Annual School Census unless stated",
+  "redeploy": {
+    "movable_share": 1.0,
+    "shortfall": 380212,
+    "spare": 81291,
+    "covered_by_moves": 20456,
+    "share_covered": 0.054,
+    "states_with_spare_over_shortfall": 15,
+    "top_spare_states": [
+      "Kwara",
+      "Enugu",
+      "Ekiti"
+    ],
+    "top20_shortfall": 33768,
+    "top20_covered_by_moves": 3734
+  },
+  "female_teachers": {
+    "median_share": 0.519,
+    "lgas_below_threshold": 95,
+    "threshold": 0.2,
+    "top20_below_threshold": 8,
+    "need_vs_female_share": {
+      "rho": -0.49,
+      "n": 642
+    },
+    "female_share_vs_girls_share": {
+      "rho": 0.26,
+      "n": 642
+    }
+  },
+  "jss": {
+    "lgas_measured": 414,
+    "median_jss_per_primary_cohort": 0.39,
+    "lgas_below_half": 252,
+    "places_gap_at_target": 4898861,
+    "target_transition": 1.0,
+    "need_vs_jss": {
+      "rho": -0.61,
+      "n": 414
+    }
+  },
+  "private": {
+    "lgas_measured": 284,
+    "national_private_return_rate": 0.343,
+    "median_private_share": 0.115,
+    "lgas_few_private_places": 89,
+    "need_vs_private_share": {
+      "rho": -0.57,
+      "n": 284
+    }
+  },
+  "since_2014": {
+    "lgas_compared": 637,
+    "worse": 395,
+    "similar": 134,
+    "better": 108,
+    "threshold": 0.2,
+    "top20_worse": 20
+  }
+}

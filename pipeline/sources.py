@@ -23,6 +23,32 @@ DX = {
     "Yr6FePoHpHP": "jss_reports_actual",
     "S2cH9F1T7MU": "jss_reports_expected",
 }
+# Further public-school fields used by the insight views (pipeline/insights.py).
+DX_PUBLIC_EXTRA = {
+    "d8qCE7aPWtD": "pry_learners",
+    "wDf8ZOwWgib": "jss_learners",
+    "HxRedgvSK2M": "girls",
+    "PbzDc38hOsx": "female_teachers",
+    "Mmn0SEDyzOC": "special_needs_pry",
+    "CKMgwHERBfg": "iqte_schools",
+}
+# Private-school fields and private census returns.
+DX_PRIVATE = {"jwjKmtVK2wj": "private_learners"}
+DX_PRIVATE_RETURNS = {"Jx7wWJI1WpR": "private_reports_actual", "q5mnwKasEpF": "private_reports_expected"}
+# Fields published only for all schools together (public and private); the "_all"
+# suffix keeps that visible wherever they are used.
+DX_ALL = {
+    "d8qCE7aPWtD": "pry_learners_all",
+    "uXpZ0iaeH4P": "pry_dropouts_all",
+    "aX6SpmH2icc": "pry_orphans_all",
+    "jwjKmtVK2wj": "learners_all",
+    "DydalnMqg5w": "computers_all",
+    "bWPz06oFs5q": "non_teaching_staff_all",
+}
+
+
+def _pivot(df, ids):
+    return df[df.dx.isin(ids)].pivot_table(index="ou", columns="dx", values="value").rename(columns=ids)
 
 
 def dnemis_lga():
@@ -32,14 +58,24 @@ def dnemis_lga():
     lga["lga_name_src"] = lga.name.str[3:].str.replace(r" LGA$", "", regex=True)
 
     own = pd.read_parquet(DNEMIS / "fact_ownership.parquet")
-    pub = own[(own.category_name == "Public") & own.dx.isin(DX)].pivot_table(index="ou", columns="dx", values="value")
+    public = own[own.category_name == "Public"]
+    pub = public[public.dx.isin(DX)].pivot_table(index="ou", columns="dx", values="value")
     fact = pd.read_parquet(DNEMIS / "fact.parquet")
     md = fact[fact.dx.isin(DX)].pivot_table(index="ou", columns="dx", values="value")
     vals = pub.join(md[[c for c in md.columns if c not in pub.columns]], how="outer").rename(columns=DX)
+    extra = [
+        _pivot(public, DX_PUBLIC_EXTRA),
+        _pivot(own[own.category_name == "Private"], DX_PRIVATE),
+        _pivot(fact, DX_PRIVATE_RETURNS),
+        _pivot(fact, DX_ALL),
+    ]
+    for e in extra:
+        vals = vals.join(e, how="outer")
 
     lga = lga.join(vals, on="id")
     matched, unmatched = match_lgas(lga, "dnemis", "parent_name", "lga_name_src")
-    cols = ["adm2_pcode", "id", "lga_name_src", "match_method"] + [c for c in DX.values() if c in matched.columns]
+    fields = [*DX.values(), *DX_PUBLIC_EXTRA.values(), *DX_PRIVATE.values(), *DX_PRIVATE_RETURNS.values(), *DX_ALL.values()]
+    cols = ["adm2_pcode", "id", "lga_name_src", "match_method"] + [c for c in fields if c in matched.columns]
     return matched[cols].rename(columns={"id": "dnemis_id"}), unmatched
 
 

@@ -69,3 +69,28 @@ persistence:
   # "Persistent shortage": in the worst quartile of learner-teacher ratio in both
   # the 2014 NMIS survey and the 2024 census.
   quantile: 0.75
+
+insights:
+  # Defaults for the views beyond the ranking (pipeline/insights.py). The app lets a
+  # planner change the first three; the build uses these values for the summary.
+  redeploy:
+    # Share of teachers above the 35:1 standard who could move to short LGAs in the
+    # same state. 1.0 is the theoretical upper bound, not a forecast.
+    movable_share: 1.0
+  jss:
+    # UBE covers nine years (primary plus JSS), so the policy target is that every
+    # primary cohort has a JSS seat.
+    target_transition: 1.0
+    reporting_at_least: 0.75   # JSS census returns needed before the ratio is shown
+  female_teachers:
+    share_below: 0.20          # flag LGAs where under 20% of public teachers are women
+  private:
+    reporting_at_least: 0.50   # private census returns needed before the share is shown
+    share_below: 0.05          # flag LGAs where private schools hold under 5% of learners
+  change_since_2014:
+    # NMIS 2014 and the 2024 census are different instruments, so only changes
+    # larger than this (relative change in learners per teacher) are labelled.
+    threshold: 0.20
+
+# Costs and budgets are not in any public dataset we found. The app asks the planner
+# for cost per teacher, cost per classroom and the budget; nothing is assumed here.
