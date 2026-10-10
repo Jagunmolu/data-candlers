@@ -20,6 +20,25 @@ Nigeria publishes a lot of education data, but it is spread across the Federal M
 - **"Not ranked" is a finding.** 132 LGAs are listed with the reason (too few census returns, or implausible counts) instead of being estimated.
 - **Long-running shortages:** LGAs also in the worst quarter in the independent 2014 NMIS school survey.
 - **State outcome context:** WAEC results (2016-2018) next to MICS6 2021 foundational reading and numeracy.
+- **Move or hire?** Whether moving spare teachers within a state could close the gap, and what is left to hire.
+- **Budget planner:** enter your own cost per teacher, cost per classroom and budget; LGAs are funded in priority order.
+- **Beyond the ratio:** women teachers, junior secondary seats, private-school alternative and change since 2014, each with a threshold you set.
+
+## Beyond the ranking: what else the census shows
+
+All from the same 2024 census (ranked LGAs, public schools) unless stated. They describe where gaps occur together, not why.
+
+| Question | Finding |
+|---|---|
+| Can moving teachers close the gap? | **Mostly no.** Even if every teacher above the 35:1 standard moved to the neediest LGA in the same state, it would cover **6%** of the 380,212-teacher shortfall (21,487). Spare teachers sit mostly in Kwara, Enugu and Ekiti. Moves could close the gap in 9 states; the 20 states where they fall short hold 98% of the shortfall, so there hiring is the main route. |
+| Where are women teachers scarce? | In 95 LGAs, under 20% of public teachers are women (median LGA: 52%), including 8 of the national top 20. Higher-need LGAs tend to have fewer (Spearman -0.49, 642 LGAs). |
+| Is there a junior secondary seat after primary? | The median LGA has 0.39 public JSS learners per primary cohort. Higher primary need goes with fewer JSS learners per cohort (Spearman -0.61, 414 LGAs with at least 75% JSS returns). |
+| Is there a private alternative? | Only 34% of expected private-school forms were returned nationally. Where at least half came back (284 LGAs), private schools hold under 5% of learners in 89. Higher-need LGAs tend to have smaller private shares (Spearman -0.57). |
+| Better or worse than 2014? | Of 637 LGAs measured in both the 2014 NMIS survey and the 2024 census, 395 have over 20% more learners per teacher, 134 are similar and 108 improved. All of today's national top 20 are worse. |
+
+![Teacher shortfall by state: what within-state moves could cover and what is left to hire](docs/img/move_or_hire.png)
+
+Values no dataset holds (share of spare teachers who can move, JSS target, thresholds, unit costs, budget) are inputs in the app. Defaults are in `config/settings.yaml`; costs have no default.
 
 ## How we know it holds up
 
@@ -72,7 +91,7 @@ To rebuild everything from raw public data (downloads about 90 MB, extracts and 
 ## Limitations
 
 - Counts are as reported by schools. The confidence grade shows where reporting is thin but cannot catch every error.
-- The census covers public schools only. Private schools enrol many children in some LGAs, especially in cities.
+- The ranking covers public schools only. Private schools enrol many children in some LGAs, especially in cities; private returns are too thin (34%) to add them to the ranking.
 - LGA population figures are projections from the 2006 census and are used only for checks and a flag.
 - WAEC results exist only by state and only for 2016-2018 here; Taraba 2018 is excluded because the published figure is a misprint (75 candidates vs 21,754 the year before).
 - This is a prioritisation aid. It shows where gaps are largest, not why.
@@ -80,13 +99,13 @@ To rebuild everything from raw public data (downloads about 90 MB, extracts and 
 ## Repository map
 
 ```
-streamlit_app.py      the app (three views: decision, state context, method)
+streamlit_app.py      the app (decision, move or hire, budget, beyond the ratio, state context, method)
 figures.py            chart builders shared by the app and scripts/render_figures.py
-pipeline/             extraction, crosswalk, Lens 1 index, Lens 2 test, validation, build
+pipeline/             extraction, crosswalk, Lens 1 index, insights, Lens 2 test, validation, build
 config/               settings.yaml (weights, thresholds, partner column map), alias and reason tables
 data/processed/       tables the app loads (committed)
 reports/              reconciliation and unmatched-record reports
-tests/                pytest: reconciliation, crosswalk, index logic
+tests/                pytest: reconciliation, crosswalk, index logic, insights
 docs/                 data audit, write-up, figures
 BUILD_LOG.md          dated record of every decision and dead end
 ```

@@ -46,9 +46,11 @@ def allocate_moves(df, movable_share):
             continue
         taken = 0.0
         for idx in g.sort_values("need_score", ascending=False).index:
+            if taken >= pool:
+                break
             take = min(g.at[idx, "teachers_needed"], pool - taken)
             if take <= 0:
-                break
+                continue  # a high-need LGA may be short of classrooms but not teachers
             out.at[idx, "moved_in"] = take
             taken += take
         # Donors give in proportion to their spare teachers.
@@ -176,7 +178,11 @@ def summary(df, cfg):
             "spare": int(st.spare.sum()),
             "covered_by_moves": int(st.covered_by_moves.sum()),
             "share_covered": round(float(st.covered_by_moves.sum() / st.shortfall.sum()), 3),
-            "states_with_spare_over_shortfall": int((st.spare >= st.shortfall).sum()),
+            "states_with_ranked_lgas": int(len(st)),
+            "states_no_shortfall": int((st.shortfall == 0).sum()),
+            "states_moves_close_gap": int(((st.shortfall > 0) & (st.covered_by_moves >= st.shortfall)).sum()),
+            "states_moves_fall_short": int((st.covered_by_moves < st.shortfall).sum()),
+            "shortfall_share_in_those_states": round(float(st.shortfall[st.covered_by_moves < st.shortfall].sum() / st.shortfall.sum()), 3),
             "top_spare_states": st.sort_values("spare", ascending=False).head(3).adm1_name.tolist(),
             "top20_shortfall": int(top20.teachers_needed.sum()),
             "top20_covered_by_moves": int(top20.teachers_moved_in.sum()),

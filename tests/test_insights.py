@@ -36,6 +36,16 @@ def test_moves_stay_inside_the_state():
     assert m.moved_out.sum() == pytest.approx(m.moved_in.sum())
 
 
+def test_moves_skip_needy_lgas_that_are_not_short_of_teachers():
+    df = toy()
+    # x2 now ranks above x1 but has no teacher shortfall (its need is classrooms): x1 must still receive.
+    df.loc[1, "need_score"] = 99.0
+    df.loc[1, "teachers"] = 20
+    df["teachers_spare"] = insights.spare_teachers(df, STD)
+    m = insights.allocate_moves(df, 1.0)
+    assert m.moved_in.tolist() == [10, 0, 0]
+
+
 def test_movable_share_scales_the_pool():
     m = insights.allocate_moves(toy(), 0.5)
     assert m.moved_in.iloc[0] == 3

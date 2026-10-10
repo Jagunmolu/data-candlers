@@ -41,6 +41,34 @@ Processed tables in `data/processed/`, all rebuilt by `python -m pipeline.build`
 | persistent_shortage | In the worst quarter for learners per teacher in both NMIS 2014 and DNEMIS 2024 | derived |
 | hidden_demand_flag | Coverage below 0.40 where reporting is at least 90% (flag only) | derived |
 
+### Insight columns (`pipeline/insights.py`; not part of the score)
+
+| Column | Meaning | Source, year |
+|---|---|---|
+| pry_learners, jss_learners | Public primary and junior secondary learners | DNEMIS 2024 |
+| girls | Public-school female learners, all levels | DNEMIS 2024 |
+| female_teachers | Female public-school teachers | DNEMIS 2024 |
+| special_needs_pry | Public primary learners with special needs | DNEMIS 2024 |
+| iqte_schools | Public integrated Qur'anic (IQS/IQTE) schools | DNEMIS 2024 |
+| private_learners | Private-school learners, all levels | DNEMIS 2024 |
+| private_reports_actual, private_reports_expected | Private-school census forms returned vs expected | DNEMIS 2024 |
+| pry_learners_all, pry_dropouts_all, pry_orphans_all, learners_all, computers_all, non_teaching_staff_all | Published for public and private schools together only | DNEMIS 2024 |
+| teachers_spare | Teachers above what 35:1 needs at current enrolment (ranked LGAs) | derived |
+| teachers_moved_in, teachers_to_hire | Base case (every spare teacher moves within the state, neediest LGAs first): teachers received and still to hire | derived |
+| female_teacher_share, girls_share | female_teachers / teachers; girls / learners | derived |
+| few_female_teachers | female_teacher_share below the threshold in settings (default 0.20) | derived |
+| jss_reporting_rate | JSS forms returned / expected | derived |
+| jss_per_primary_cohort | (jss_learners / 3) / (pry_learners / 6); blank where JSS returns are under 75% | derived |
+| jss_places_gap | Extra public JSS places for the target share of a primary cohort (default 1.0) | derived |
+| private_reporting_rate | Private forms returned / expected | derived |
+| private_share | private / (private + public) learners; blank where private returns are under 50% | derived |
+| few_private_places | private_share below the threshold in settings (default 0.05) | derived |
+| ltr_change_since_2014 | ltr / nmis_ltr - 1 (ranked LGAs) | derived, NMIS 2014 and DNEMIS 2024 |
+| trend_since_2014 | Worse, Similar or Better, using the threshold in settings (default 0.20) | derived |
+| special_needs_share_pry | special_needs_pry / pry_learners | derived |
+| dropout_rate_pry_all, orphan_share_pry_all | Over pry_learners_all | derived |
+| learners_per_computer_all, learners_per_non_teaching_staff_all | learners_all / computers_all; learners_all / non_teaching_staff_all | derived |
+
 ## state_context.parquet (37 rows)
 
 | Column | Meaning | Source, year |
@@ -63,6 +91,7 @@ Processed tables in `data/processed/`, all rebuilt by `python -m pipeline.build`
 | lga_index_meta.json | Weights, standards, grade counts, PCA check, weight-draw ranges |
 | lens2_meta.json | Lens 2 model, LOSO errors, exclusions |
 | validation.json | Spearman checks against MICS 2021, UBEC 2018, NMIS 2014 |
+| insights_meta.json | National figures for the insight views at the default settings (quoted in the README and write-up) |
 
 ## Interim tables (`data/interim/`, not committed)
 

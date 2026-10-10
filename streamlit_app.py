@@ -82,10 +82,12 @@ if demo:
         "1. National top 20 and the totals. "
         "2. Map: dark blue = need, grey = not ranked. "
         "3. Pick **Kano** in State: a state planner's own list. "
-        "4. Back to All of Nigeria; in 'Look at one LGA' read **Olorunsogo, Oyo**. "
-        "5. Open 'Not ranked'. "
-        "6. Tab 'State outcome context'. "
-        "7. Tab 'Method, data and limits'."
+        "4. Back to All of Nigeria; in 'Look at one LGA' read **Olorunsogo, Oyo**, then open 'Not ranked'. "
+        "5. Tab 'Move or hire?': moves cover only a small share; lower the slider. "
+        "6. Tab 'Budget planner': enter your cost assumptions and a budget. "
+        "7. Tab 'Beyond the ratio': women teachers, JSS seats, private schools, since 2014. "
+        "8. Tab 'State outcome context'. "
+        "9. Tab 'Method, data and limits'."
     )
 c1, c2, c3 = st.columns([2, 2, 1])
 state_options = ["All of Nigeria"] + sorted(lga.adm1_name.unique())
@@ -285,8 +287,9 @@ with tab_move:
         st.markdown(
             f"Even if **every** teacher above the standard moved, moves would cover **{rd['share_covered']:.0%}** of the "
             f"national shortfall ({rd['covered_by_moves']:,} of {rd['shortfall']:,}). Spare teachers sit mostly in "
-            f"{', '.join(rd['top_spare_states'])}, while the shortfall is elsewhere. In {rd['states_with_spare_over_shortfall']} "
-            "states, moving teachers could close the state's own gap; in the rest, **hiring is the main route**."
+            f"{', '.join(rd['top_spare_states'])}, while the shortfall is elsewhere. Moves could close the gap in "
+            f"{rd['states_moves_close_gap']} states. The {rd['states_moves_fall_short']} states where they fall short hold "
+            f"{rd['shortfall_share_in_those_states']:.0%} of the shortfall: there, **hiring is the main route**."
         )
         st.plotly_chart(moves_bar(by_state), width="stretch", config={"displayModeBar": False})
         st.caption("Ranked LGAs only. Moves never cross state lines. " + VINTAGE)
@@ -511,6 +514,16 @@ with tab3:
 3. **Score.** Among ranked LGAs, each ratio becomes a percentile (0 = best, 1 = worst). The need score is a weighted average: teachers {w['teacher']:.0%}, classrooms {w['classroom']:.0%}, toilets {w['toilet']:.0%}, scaled to 0-100.
 4. **Size the gap.** Teachers and classrooms needed to reach 35:1 at current enrolment.
 
+### Beyond the ranking (same census, not part of the score)
+- **Move or hire?** Spare teachers are those above what 35:1 needs. Within each state they go to the neediest ranked LGAs first. Even with every spare teacher moving, this covers {ins_meta['redeploy']['share_covered']:.0%} of the national shortfall.
+- **Women teachers:** female public teachers / all public teachers.
+- **JSS seats:** (public JSS learners / 3) / (public primary learners / 6), shown where at least 75% of JSS forms came back.
+- **Private alternative:** private / (private + public) learners, shown where at least 50% of private forms came back (nationally {ins_meta['private']['national_private_return_rate']:.0%}).
+- **Since 2014:** relative change in learners per teacher, NMIS 2014 vs census 2024; labelled only beyond a threshold because the instruments differ.
+
+### Values you set (no dataset has them)
+Share of spare teachers who can move, target JSS transition, the flag thresholds, cost per teacher, cost per classroom and the budget. Defaults (except costs, which have none) are in `config/settings.yaml`.
+
 ### How we checked it
 - **Weights:** across 1,000 random alternative weightings, {meta['n_persistent_top20']} of the national top 20 stay in the top 20 at least 80% of the time.
 - **Structure:** the score ranks LGAs almost identically to a purely statistical summary of the three ratios (first principal component, Spearman {meta['pca']['spearman_index_vs_pc1']:.2f}).
@@ -533,7 +546,7 @@ No synthetic data is used anywhere.
 
 ### Limits
 - Counts are as reported by schools; the confidence grade shows where reporting is thin, but it cannot catch every error.
-- The census counts public schools only. Private schools enrol many children in some LGAs, especially in cities.
+- The ranking counts public schools only. Private schools enrol many children in some LGAs, especially in cities; their share is shown under 'Beyond the ratio' where private returns allow.
 - Population figures are projections from the 2006 census and are used only for checks and a flag, never for the score.
 - WAEC results exist only by state; they are context, never an LGA outcome.
 - This is a prioritisation aid. It shows where gaps are largest, not why.

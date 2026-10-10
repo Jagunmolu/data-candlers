@@ -91,7 +91,7 @@ def moves_bar(states, height=520):
             hovertemplate="%{y}<br>" + name + ": %{x:,.0f}<br>Shortfall %{customdata[0]:,.0f} · spare %{customdata[1]:,.0f}"
                           "<br>Moves cover %{customdata[2]:.0%}<extra></extra>",
         ))
-    fig.update_layout(barmode="stack", bargap=0.25)
+    fig.update_layout(barmode="stack", bargap=0.25, legend_traceorder="normal")
     return _layout(fig, height, "Public-school teachers short of the 35:1 standard (ranked LGAs, 2024)", None, showlegend=True)
 
 
