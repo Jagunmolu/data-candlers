@@ -6,6 +6,7 @@ so it starts in seconds and makes no network calls at runtime.
 import json
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import streamlit as st
 
@@ -243,11 +244,12 @@ with tab_move:
     short, cov = scope_m.shortfall.sum(), scope_m.covered_by_moves.sum()
     if scope_m.empty:
         st.info(f"No ranked LGAs in {scope}, so moves cannot be assessed. See 'Not ranked' on the first tab.")
-    m1, m2, m3 = st.columns(3) if not scope_m.empty else (st.empty(),) * 3
-    m1.metric(f"Teacher shortfall, {scope}", fmt_int(short), help="Ranked LGAs only (grades A-C).")
-    m2.metric("Could be covered by moves", fmt_int(cov), help=f"With {movable:.0%} of spare teachers moving within the state.")
-    m3.metric("Still to hire", fmt_int(short - cov), delta=f"moves cover {cov / short:.0%}" if short else None,
-              delta_color="off")
+    else:
+        m1, m2, m3 = st.columns(3)
+        m1.metric(f"Teacher shortfall, {scope}", fmt_int(short), help="Ranked LGAs only (grades A-C).")
+        m2.metric("Could be covered by moves", fmt_int(cov), help=f"With {movable:.0%} of spare teachers moving within the state.")
+        m3.metric("Still to hire", fmt_int(short - cov), delta=f"moves cover {cov / short:.0%}" if short else None,
+                  delta_color="off")
     if state == "All of Nigeria":
         rd = ins_meta["redeploy"]
         st.markdown(
@@ -281,6 +283,107 @@ with tab_move:
         )
     st.caption("A spare teacher may teach a subject or level that a short LGA does not need, so the moves shown "
                "are an upper bound at your chosen share.")
+
+# ---------------------------------------------------------------- tab: beyond the ratio
+def flagged_table(d, cols, key):
+    """Flagged LGAs in scope, neediest first, with a CSV download."""
+    t = d.sort_values("need_score", ascending=False)
+    out = pd.DataFrame({"LGA": t.adm2_name, "State": t.adm1_name, "National rank": t["rank"].astype(int),
+                        "Learners per teacher": t.ltr.round(0), **{k: f(t) for k, f in cols.items()},
+                        "Confidence": t.confidence})
+    st.dataframe(out, hide_index=True, width="stretch", height=min(38 * (len(out) + 1), 320))
+    st.download_button("Download (CSV)", out.to_csv(index=False).encode("utf-8"), file_name=f"{key}_{scope.lower().replace(' ', '_')}.csv",
+                       mime="text/csv", key=f"dl_{key}")
+
+
+with tab_beyond:
+    st.markdown(
+        f"**What else the census says about the LGAs on the list** ({scope}, ranked LGAs in the selected grades). "
+        "Each section has its own threshold, which you can change. These describe where gaps sit together; they do not explain causes."
+    )
+    top_codes = top.adm2_pcode
+
+    # Female teachers
+    st.subheader("1. Where are there few women teachers?")
+    ft = st.slider("Flag LGAs where women are fewer than", 5, 50, int(100 * CFG["female_teachers"]["share_below"]), 5,
+                   format="%d%% of public teachers", key="ft") / 100
+    d = view[view.female_teacher_share.notna()]
+    flag = d[d.female_teacher_share < ft]
+    fm = ins_meta["female_teachers"]
+    st.markdown(
+        f"**{len(flag)} of {len(d)}** LGAs in scope are below {ft:.0%} ({flag.adm2_pcode.isin(top_codes).sum()} of the top {len(top)}). "
+        f"Nationally the median LGA has {fm['median_share']:.0%} women teachers, and LGAs with higher need tend to have fewer "
+        f"(Spearman {fm['need_vs_female_share']['rho']:+.2f}, {fm['need_vs_female_share']['n']} LGAs). "
+        "Where the list sends new teachers to these LGAs, recruiting women is worth planning for."
+    )
+    st.plotly_chart(lga_scatter(d, "female_teacher_share", "need_score", "Women among public teachers", "Need score",
+                                fmt_x=".0%", fmt_y=".0f", highlight=top_codes), width="stretch", config={"displayModeBar": False})
+    st.caption("Black outline = the current top list. " + VINTAGE)
+    with st.expander(f"{len(flag)} LGAs below {ft:.0%}"):
+        flagged_table(flag, {"Women teachers": lambda t: (100 * t.female_teacher_share).round(0),
+                             "Girls among learners (%)": lambda t: (100 * t.girls_share).round(0)}, "few_women_teachers")
+
+    # Junior secondary places
+    st.subheader("2. Is there a junior secondary seat after primary?")
+    target = st.slider("Target share of a primary cohort with a public JSS seat", 50, 100,
+                       int(100 * CFG["jss"]["target_transition"]), 5, format="%d%%", key="jss",
+                       help="UBE covers nine years, so the policy target is 100%. Lower it to plan in stages.") / 100
+    d = view[view.jss_per_primary_cohort.notna()].copy()
+    d["gap"] = insights.jss_places_gap(d, target)
+    jm = ins_meta["jss"]
+    st.markdown(
+        f"For one primary grade of learners, the median LGA nationally has **{jm['median_jss_per_primary_cohort']:.2f}** learners "
+        f"in one public JSS grade. LGAs with higher primary need also tend to have fewer JSS learners per cohort "
+        f"(Spearman {jm['need_vs_jss']['rho']:+.2f}, {jm['need_vs_jss']['n']} LGAs). In scope, reaching {target:.0%} "
+        f"would take about **{fmt_int(d.gap.sum())} more public JSS places** ({fmt_int(np.ceil(d.gap.sum() / 35))} classrooms at 35:1)."
+    )
+    st.plotly_chart(lga_scatter(d, "jss_per_primary_cohort", "need_score", "JSS learners per primary cohort", "Need score",
+                                fmt_x=".2f", highlight=top_codes), width="stretch", config={"displayModeBar": False})
+    st.caption("Shown only where at least 75% of JSS census forms were returned. Public schools only: private JSS places, "
+               "over-age primary learners and children schooling in a neighbouring LGA all affect this ratio. " + VINTAGE)
+    with st.expander(f"LGAs in scope by JSS places needed at {target:.0%}"):
+        flagged_table(d[d.gap > 0], {"JSS per primary cohort": lambda t: t.jss_per_primary_cohort.round(2),
+                                     "JSS places needed": lambda t: t.gap}, "jss_places")
+
+    # Private alternative
+    st.subheader("3. Is there a private-school alternative?")
+    pt = st.slider("Flag LGAs where private schools hold fewer than", 1, 30, int(100 * CFG["private"]["share_below"]), 1,
+                   format="%d%% of learners", key="prv") / 100
+    d = view[view.private_share.notna()]
+    flag = d[d.private_share < pt]
+    pm = ins_meta["private"]
+    st.markdown(
+        f"Only **{pm['national_private_return_rate']:.0%}** of expected private-school census forms were returned nationally, "
+        f"so this is shown for the {len(d)} LGAs in scope where at least half came back. Of these, **{len(flag)}** have private "
+        f"schools holding under {pt:.0%} of learners: public schools are effectively the only option there. LGAs with higher "
+        f"need tend to have smaller private shares (Spearman {pm['need_vs_private_share']['rho']:+.2f}, {pm['need_vs_private_share']['n']} LGAs)."
+    )
+    st.plotly_chart(lga_scatter(d, "private_share", "need_score", "Private schools' share of learners", "Need score",
+                                highlight=top_codes), width="stretch", config={"displayModeBar": False})
+    st.caption("Private share = private learners / (private + public learners), all levels. " + VINTAGE)
+    with st.expander(f"{len(flag)} LGAs below {pt:.0%}"):
+        flagged_table(flag, {"Private share (%)": lambda t: (100 * t.private_share).round(1),
+                             "Private returns (%)": lambda t: (100 * t.private_reporting_rate).round(0)}, "few_private")
+
+    # Change since 2014
+    st.subheader("4. Better or worse than in 2014?")
+    ct = st.slider("Label a change only if learners per teacher moved by more than", 10, 50,
+                   int(100 * CFG["change_since_2014"]["threshold"]), 5, format="%d%%", key="chg",
+                   help="The 2014 NMIS survey and the 2024 census are different instruments, so small changes are not labelled.") / 100
+    d = view[view.ltr_change_since_2014.notna()].copy()
+    d["trend"] = np.select([d.ltr_change_since_2014 > ct, d.ltr_change_since_2014 < -ct], ["Worse", "Better"], "Similar")
+    counts = d.trend.value_counts()
+    st.markdown(
+        f"Of {len(d)} LGAs in scope measured both times, **{counts.get('Worse', 0)} have more learners per teacher than in 2014**, "
+        f"{counts.get('Similar', 0)} are similar and {counts.get('Better', 0)} improved by more than {ct:.0%}."
+    )
+    st.plotly_chart(lga_scatter(d, "nmis_ltr", "ltr", "Learners per teacher, 2014 (NMIS)", "Learners per teacher, 2024",
+                                fmt_x=".0f", diagonal=True, highlight=top_codes), width="stretch", config={"displayModeBar": False})
+    st.caption("Dots above the dotted line have more learners per teacher than in 2014. NMIS: OSSAP-MDGs and Columbia SEL, "
+               "public schools surveyed 2009-2014 (CC BY 4.0). " + VINTAGE)
+    with st.expander(f"{counts.get('Worse', 0)} LGAs worse than 2014"):
+        flagged_table(d[d.trend == "Worse"], {"2014": lambda t: t.nmis_ltr.round(0),
+                                              "Change (%)": lambda t: (100 * t.ltr_change_since_2014).round(0)}, "worse_since_2014")
 
 # ---------------------------------------------------------------- tab 2: state context
 with tab2:
