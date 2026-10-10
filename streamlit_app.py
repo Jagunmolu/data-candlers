@@ -142,6 +142,8 @@ with tab1:
             "Confidence": top.confidence,
             "Stays in national top 20 (%)": (100 * top.top20_share).round(0),
             "Short since 2014": top.persistent_shortage.map({True: "Yes", False: ""}),
+            "Still to hire after moves": top.teachers_to_hire,
+            "Women teachers (%)": (100 * top.female_teacher_share).round(0),
             "National rank": top["rank"].astype(int),
             "Caveat": top.caveat.fillna(""),
         })
@@ -160,6 +162,9 @@ with tab1:
                 "Stays in national top 20 (%)": st.column_config.NumberColumn(
                     help="Share of 1,000 alternative weightings of the index in which this LGA stays in the national top 20.",
                     format="%d%%"),
+                "Still to hire after moves": st.column_config.NumberColumn(format="%d",
+                    help="Teachers needed after every spare teacher in the same state has moved to the neediest LGAs first. See 'Move or hire?'."),
+                "Women teachers (%)": st.column_config.NumberColumn(format="%d%%", help="Share of public-school teachers who are women."),
                 "Short since 2014": st.column_config.TextColumn(
                     help="Also in the worst quarter for learners per teacher in the independent 2014 NMIS school survey."),
             },
@@ -213,7 +218,32 @@ with tab1:
         notes.append(f"**2014 facility conditions (NMIS, public schools):** {r.nmis_share_water:.0%} had improved water, "
                      f"{r.nmis_share_sanitation:.0%} improved sanitation, {r.nmis_share_power:.0%} grid power. "
                      "These are ten years old: context, not current status.")
+    if pd.notna(r.teachers_spare) and r.teachers_needed > 0:
+        notes.append(f"**Move or hire:** if every spare teacher in {r.adm1_name} moved, about {fmt_int(r.teachers_moved_in)} "
+                     f"could come to this LGA; about {fmt_int(r.teachers_to_hire)} would still need to be hired.")
+    elif pd.notna(r.teachers_spare) and r.teachers_spare > 0:
+        notes.append(f"**Spare teachers:** about {fmt_int(r.teachers_spare)} above what 35:1 needs, so this LGA could give teachers to short LGAs in {r.adm1_name}.")
+    if pd.notna(r.trend_since_2014):
+        notes.append(f"**Since 2014:** learners per teacher {r.nmis_ltr:.0f} (NMIS 2014) to {r.ltr:.0f} (2024), "
+                     f"{r.ltr_change_since_2014:+.0%}: {r.trend_since_2014.lower()}.")
     st.markdown("\n\n".join(notes))
+
+    ctx = [
+        ("Women among public teachers", fmt_pct(r.female_teacher_share)),
+        ("Girls among public learners", fmt_pct(r.girls_share)),
+        ("JSS learners per primary cohort", "n/a" if pd.isna(r.jss_per_primary_cohort) else f"{r.jss_per_primary_cohort:.2f}"),
+        ("Private schools' share of learners", fmt_pct(r.private_share)),
+        ("Primary learners with special needs (public)", fmt_pct(r.special_needs_share_pry)),
+        ("Integrated Qur'anic (IQS/IQTE) public schools", fmt_int(r.get("iqte_schools"))),
+        ("Primary dropout rate (all schools)", "n/a" if pd.isna(r.dropout_rate_pry_all) else f"{r.dropout_rate_pry_all:.1%}"),
+        ("Primary learners who are orphans (all schools)", fmt_pct(r.orphan_share_pry_all)),
+        ("Learners per usable computer (all schools)", fmt_int(r.learners_per_computer_all)),
+        ("Learners per non-teaching staff (all schools)", fmt_int(r.learners_per_non_teaching_staff_all)),
+    ]
+    with st.expander("More about this LGA (2024 census)"):
+        st.dataframe(pd.DataFrame(ctx, columns=["Measure", "Value"]), hide_index=True, width="stretch")
+        st.caption("Context, not part of the score. 'All schools' measures are published only for public and private schools "
+                   "together. JSS and private figures are shown only where enough census forms came back. " + VINTAGE)
 
     with st.expander(f"Not ranked: {int((lga.confidence == 'Not ranked').sum())} LGAs and why"):
         nr = lga[lga.confidence == "Not ranked"]
