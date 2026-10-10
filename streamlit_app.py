@@ -284,6 +284,66 @@ with tab_move:
     st.caption("A spare teacher may teach a subject or level that a short LGA does not need, so the moves shown "
                "are an upper bound at your chosen share.")
 
+# ---------------------------------------------------------------- tab: budget planner
+with tab_budget:
+    st.markdown(
+        "**Turn the list into a budget line.** No public dataset gives teacher or classroom unit costs for each state, "
+        "so enter your own. The planner funds LGAs in priority order until the budget runs out."
+    )
+    b1, b2, b3 = st.columns(3)
+    t_cost = b1.number_input("Cost per new teacher (₦)", min_value=0, value=None, step=100_000, placeholder="e.g. one year's pay",
+                             help="Everything a new teacher costs over the period you are budgeting for: pay, allowances, "
+                             "posting and training.")
+    c_cost = b2.number_input("Cost per classroom (₦)", min_value=0, value=None, step=1_000_000, placeholder="build or rehabilitate",
+                             help="Average cost to add one usable classroom, from your own contract rates.")
+    budget = b3.number_input("Budget available (₦)", min_value=0, value=None, step=100_000_000, placeholder="total for this scope")
+    o1, o2, o3 = st.columns(3)
+    which = o1.radio("LGAs to fund", [f"The top {len(top)} list", f"All {len(view)} ranked LGAs in scope"], horizontal=False)
+    use_moves = o2.checkbox("Move spare teachers first", value=True,
+                            help=f"Uses the share set on 'Move or hire?' ({movable:.0%}). Moved teachers cost nothing extra here.")
+    with_rooms = o3.checkbox("Include classrooms", value=True)
+
+    pool = (top if which.startswith("The top") else view).join(moves, rsuffix="_m")
+    pool = pool.sort_values("need_score", ascending=False)
+    pool["teachers_to_fund"] = pool.to_hire if use_moves else pool.teachers_needed
+    if not with_rooms:
+        pool = pool.assign(classrooms_needed=0)
+
+    st.markdown(
+        f"**What the gap is, before costs:** {fmt_int(pool.teachers_to_fund.sum())} teachers to hire"
+        + (f" (after {fmt_int(pool.moved_in.sum())} moved in)" if use_moves else "")
+        + (f" and {fmt_int(pool.classrooms_needed.sum())} classrooms" if with_rooms else "")
+        + f" across {len(pool)} LGAs."
+    )
+    if pool.empty:
+        st.info(f"No ranked LGAs in {scope} for the selected grades.")
+    elif t_cost is None or (with_rooms and c_cost is None):
+        st.info("Enter the unit costs above to see what the gap costs. Add a budget to see how far it goes.")
+    else:
+        c_cost = c_cost or 0
+        full = pool.teachers_to_fund.sum() * t_cost + pool.classrooms_needed.sum() * c_cost
+        plan = insights.budget_plan(pool, t_cost, c_cost, budget if budget is not None else full, teachers_col="teachers_to_fund")
+        k1, k2, k3 = st.columns(3)
+        k1.metric("Cost to close the whole gap", naira(full))
+        if budget is not None:
+            n_full = int((plan.status == "Fully funded").sum())
+            k2.metric("LGAs fully funded", f"{n_full} of {len(pool)}")
+            k3.metric("Budget covers", f"{min(budget / full, 1):.0%}" if full else "100%",
+                      help="Share of the full cost this budget pays for.")
+        out = pool.join(plan)
+        t = pd.DataFrame({
+            "Priority": range(1, len(out) + 1), "LGA": out.adm2_name, "State": out.adm1_name,
+            "Teachers to hire": out.teachers_to_fund, "Teachers funded": out.teachers_funded,
+            "Classrooms needed": out.classrooms_needed, "Classrooms funded": out.classrooms_funded,
+            "Cost of full gap (₦)": out.cost_full_gap.round(0), "Funded (₦)": out.cost_funded.round(0), "Status": out.status,
+        })
+        st.dataframe(t, hide_index=True, width="stretch",
+                     column_config={c: st.column_config.NumberColumn(format="localized") for c in ["Cost of full gap (₦)", "Funded (₦)"]})
+        st.download_button("Download this budget (CSV)", t.to_csv(index=False).encode("utf-8"),
+                           file_name=f"budget_{scope.lower().replace(' ', '_')}.csv", mime="text/csv")
+        st.caption("Costs are your inputs, not data. Gaps: " + VINTAGE + " Each LGA's full gap is funded before the next; "
+                   "the last LGA reached is funded in part, teachers first.")
+
 # ---------------------------------------------------------------- tab: beyond the ratio
 def flagged_table(d, cols, key):
     """Flagged LGAs in scope, neediest first, with a CSV download."""
