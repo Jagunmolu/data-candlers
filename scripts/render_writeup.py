@@ -24,7 +24,8 @@ CSS = """
 body { font-family: "Segoe UI", system-ui, -apple-system, sans-serif; font-size: 8.9pt; line-height: 1.34; color: #0b0b0b; }
 h1 { font-size: 15pt; margin: 0 0 2px; color: #0d366b; }
 h2 { font-size: 10.2pt; margin: 7px 0 2px; color: #184f95; border-bottom: 1px solid #e1e0d9; padding-bottom: 1px; }
-p { margin: 0 0 4px; }
+p { margin: 0 0 4px; text-align: justify; hyphens: auto; }
+li { text-align: justify; hyphens: auto; }
 a { color: #184f95; }
 ul { margin: 0; padding-left: 14px; } li { margin: 0 0 3px; }
 .ev { display: flex; gap: 10px; align-items: flex-start; margin: 4px 0 2px; }
