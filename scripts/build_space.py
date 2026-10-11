@@ -39,6 +39,9 @@ def main():
         shutil.copy2(ROOT / f, OUT / f)
     for d in DIRS:
         shutil.copytree(ROOT / d, OUT / d, ignore=shutil.ignore_patterns("__pycache__", ".gitkeep"))
+    # Linux containers need LF line endings in the Dockerfile, whatever the local checkout uses.
+    df = OUT / "Dockerfile"
+    df.write_bytes(df.read_bytes().replace(bytes([13, 10]), bytes([10])))
     repo = "https://github.com/Jagunmolu/data-candlers"
     (OUT / "README.md").write_text(README.format(repo=repo), encoding="utf-8")
     size = sum(p.stat().st_size for p in OUT.rglob("*") if p.is_file()) / 1e6
