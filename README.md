@@ -70,6 +70,16 @@ To rebuild everything from raw public data (downloads about 90 MB, extracts and 
 .venv/Scripts/python scripts/reproduce.py
 ```
 
+### Dash version
+
+`dash_app.py` is a second front end with the same data and calculations (`pipeline/insights.py`, `figures.py`): Mantine components, AG Grid tables, an on-page light/dark switch that remembers the viewer's choice, and linked views (click an LGA on the map or in the table to open it).
+
+```bash
+.venv/Scripts/python dash_app.py          # http://localhost:8050, add ?demo=1 for the demo path
+```
+
+Deploy with the `Dockerfile` (runs `gunicorn dash_app:server`, slim `requirements-dash.txt`). For a Hugging Face Space, `python scripts/build_space.py` writes a ready-to-push folder to `build/space`.
+
 **Using fresher data from a partner:** set `lga_input.adapter: csv` in `config/settings.yaml`, map the partner's column names, and rebuild. No code changes.
 
 ## Data sources
@@ -100,6 +110,7 @@ To rebuild everything from raw public data (downloads about 90 MB, extracts and 
 
 ```
 streamlit_app.py      the app (decision, move or hire, budget, beyond the ratio, state context, method)
+dash_app.py, dashapp/ the same app in Dash (layout, callbacks, shared data)
 figures.py            chart builders shared by the app and scripts/render_figures.py
 pipeline/             extraction, crosswalk, Lens 1 index, insights, Lens 2 test, validation, build
 config/               settings.yaml (weights, thresholds, partner column map), alias and reason tables

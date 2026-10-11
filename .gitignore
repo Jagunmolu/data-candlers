@@ -28,3 +28,6 @@ docs/WRITEUP.html
 scripts/extract_brief.py
 Datathon Brief _ YDP Community.html
 Datathon Brief _ YDP Community_files/
+
+# Generated deploy folders
+build/

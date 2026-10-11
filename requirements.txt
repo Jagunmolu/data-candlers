@@ -1,3 +1,6 @@
+dash-ag-grid==35.3.0
+dash-mantine-components==2.8.0
+dash==4.4.1
 geopandas==1.2.0
 kaleido==1.4.0
 markdown==3.9

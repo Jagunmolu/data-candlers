@@ -1,0 +1,11 @@
+# Runtime dependencies for the Dash app only (dash_app.py). The full build uses requirements.txt.
+dash==4.4.1
+dash-ag-grid==35.3.0
+dash-mantine-components==2.8.0
+gunicorn==26.2.0
+numpy==2.5.3
+pandas==3.0.6
+plotly==7.1.0
+pyarrow==25.0.1
+pyyaml==6.0.3
+scipy==1.16.2
