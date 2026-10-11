@@ -26,6 +26,11 @@ GRADE_TEXT = {
 }
 
 st.set_page_config(page_title="Where Should the Next Teacher Go?", page_icon=":school:", layout="wide")
+# Streamlit's default leaves about 6rem above the title; keep enough for the toolbar.
+st.markdown("<style>[data-testid='stMainBlockContainer']{padding-top:2.5rem;}</style>", unsafe_allow_html=True)
+# Charts follow the viewer's light/dark choice (app menu > Settings > App theme).
+THEME = st.context.theme.type if st.context.theme.type in ("light", "dark") else "light"
+NEED_WORD, OUTLINE_WORD = ("Darker blue", "Black") if THEME == "light" else ("Brighter blue", "White")
 
 
 @st.cache_data
@@ -80,7 +85,7 @@ if demo:
     st.info(
         "**Demo path** (fixed data, same every time): "
         "1. National top 20 and the totals. "
-        "2. Map: dark blue = need, grey = not ranked. "
+        "2. Map: stronger blue = more need, grey = not ranked. "
         "3. Pick **Kano** in State: a state planner's own list. "
         "4. Back to All of Nigeria; in 'Look at one LGA' read **Olorunsogo, Oyo**, then open 'Not ranked'. "
         "5. Tab 'Move or hire?': moves cover only a small share; lower the slider. "
@@ -181,9 +186,9 @@ with tab1:
 
     # Map
     st.subheader("Need across LGAs")
-    fig = need_map(lga, geo, view.adm2_pcode, top)
+    fig = need_map(lga, geo, view.adm2_pcode, top, theme=THEME)
     st.plotly_chart(fig, width="stretch", config={"displayModeBar": False})
-    st.caption("Darker blue = further from the 35:1 standard relative to other LGAs. Black outline = the list above. "
+    st.caption(f"{NEED_WORD} = further from the 35:1 standard relative to other LGAs. {OUTLINE_WORD} outline = the list above. "
                "Grey = not ranked (too little or implausible data) or outside the filter. " + VINTAGE)
 
     # LGA detail
@@ -291,7 +296,7 @@ with tab_move:
             f"{rd['states_moves_close_gap']} states. The {rd['states_moves_fall_short']} states where they fall short hold "
             f"{rd['shortfall_share_in_those_states']:.0%} of the shortfall: there, **hiring is the main route**."
         )
-        st.plotly_chart(moves_bar(by_state), width="stretch", config={"displayModeBar": False})
+        st.plotly_chart(moves_bar(by_state, theme=THEME), width="stretch", config={"displayModeBar": False})
         st.caption("Ranked LGAs only. Moves never cross state lines. " + VINTAGE)
     else:
         lg = lga_m[(lga_m.adm1_name == state) & lga_m.confidence.isin(["A", "B", "C"])]
@@ -410,8 +415,8 @@ with tab_beyond:
         "Where the list sends new teachers to these LGAs, recruiting women is worth planning for."
     )
     st.plotly_chart(lga_scatter(d, "female_teacher_share", "need_score", "Women among public teachers", "Need score",
-                                fmt_x=".0%", fmt_y=".0f", highlight=top_codes), width="stretch", config={"displayModeBar": False})
-    st.caption("Black outline = the current top list. " + VINTAGE)
+                                fmt_x=".0%", fmt_y=".0f", highlight=top_codes, theme=THEME), width="stretch", config={"displayModeBar": False})
+    st.caption(f"{OUTLINE_WORD} outline = the current top list. " + VINTAGE)
     with st.expander(f"{len(flag)} LGAs below {ft:.0%}"):
         flagged_table(flag, {"Women teachers": lambda t: (100 * t.female_teacher_share).round(0),
                              "Girls among learners (%)": lambda t: (100 * t.girls_share).round(0)}, "few_women_teachers")
@@ -431,7 +436,7 @@ with tab_beyond:
         f"would take about **{fmt_int(d.gap.sum())} more public JSS places** ({fmt_int(np.ceil(d.gap.sum() / 35))} classrooms at 35:1)."
     )
     st.plotly_chart(lga_scatter(d, "jss_per_primary_cohort", "need_score", "JSS learners per primary cohort", "Need score",
-                                fmt_x=".2f", highlight=top_codes), width="stretch", config={"displayModeBar": False})
+                                fmt_x=".2f", highlight=top_codes, theme=THEME), width="stretch", config={"displayModeBar": False})
     st.caption("Shown only where at least 75% of JSS census forms were returned. Public schools only: private JSS places, "
                "over-age primary learners and children schooling in a neighbouring LGA all affect this ratio. " + VINTAGE)
     with st.expander(f"LGAs in scope by JSS places needed at {target:.0%}"):
@@ -452,7 +457,7 @@ with tab_beyond:
         f"need tend to have smaller private shares (Spearman {pm['need_vs_private_share']['rho']:+.2f}, {pm['need_vs_private_share']['n']} LGAs)."
     )
     st.plotly_chart(lga_scatter(d, "private_share", "need_score", "Private schools' share of learners", "Need score",
-                                highlight=top_codes), width="stretch", config={"displayModeBar": False})
+                                highlight=top_codes, theme=THEME), width="stretch", config={"displayModeBar": False})
     st.caption("Private share = private learners / (private + public learners), all levels. " + VINTAGE)
     with st.expander(f"{len(flag)} LGAs below {pt:.0%}"):
         flagged_table(flag, {"Private share (%)": lambda t: (100 * t.private_share).round(1),
@@ -471,7 +476,7 @@ with tab_beyond:
         f"{counts.get('Similar', 0)} are similar and {counts.get('Better', 0)} improved by more than {ct:.0%}."
     )
     st.plotly_chart(lga_scatter(d, "nmis_ltr", "ltr", "Learners per teacher, 2014 (NMIS)", "Learners per teacher, 2024",
-                                fmt_x=".0f", diagonal=True, highlight=top_codes), width="stretch", config={"displayModeBar": False})
+                                fmt_x=".0f", diagonal=True, highlight=top_codes, theme=THEME), width="stretch", config={"displayModeBar": False})
     st.caption("Dots above the dotted line have more learners per teacher than in 2014. NMIS: OSSAP-MDGs and Columbia SEL, "
                "public schools surveyed 2009-2014 (CC BY 4.0). " + VINTAGE)
     with st.expander(f"{counts.get('Worse', 0)} LGAs worse than 2014"):
@@ -484,7 +489,7 @@ with tab2:
         "**State-level outcomes, for context only.** WAEC results are published by state, not by LGA, "
         "so they cannot rank LGAs. We show them next to independent survey measures of learning."
     )
-    fig2 = state_scatter(states, highlight=state)
+    fig2 = state_scatter(states, highlight=state, theme=THEME)
     st.plotly_chart(fig2, width="stretch", config={"displayModeBar": False})
     rho = checks["mics_2021"]
     st.caption("Each dot is a state. WAEC: NBS WAEC Results Statistics 2016-2018, school candidates, Taraba 2016-2017 only. "

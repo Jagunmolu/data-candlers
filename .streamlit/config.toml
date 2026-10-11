@@ -1,9 +1,19 @@
 [theme]
+font = "sans serif"
+
+# Defining both sections lets viewers switch between light and dark in the
+# app menu (top right: Settings > App theme). Values follow the dataviz palette.
+[theme.light]
 primaryColor = "#2a78d6"
 backgroundColor = "#fcfcfb"
 secondaryBackgroundColor = "#f0efec"
 textColor = "#0b0b0b"
-font = "sans serif"
+
+[theme.dark]
+primaryColor = "#3987e5"
+backgroundColor = "#1a1a19"
+secondaryBackgroundColor = "#2c2c2a"
+textColor = "#ffffff"
 
 [server]
 headless = true
