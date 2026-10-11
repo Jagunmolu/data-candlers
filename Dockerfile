@@ -1,4 +1,4 @@
-# Dash app container (Hugging Face Spaces, Render or any Docker host).
+# Dash app container (Render or any Docker host).
 FROM python:3.12-slim
 WORKDIR /app
 COPY requirements-dash.txt .
@@ -8,7 +8,7 @@ COPY dashapp/ dashapp/
 COPY pipeline/__init__.py pipeline/insights.py pipeline/
 COPY config/settings.yaml config/
 COPY data/processed/ data/processed/
-# Hugging Face Spaces expects port 7860; Render sets $PORT itself.
+# Render sets $PORT itself; 7860 is only the local default.
 ENV PORT=7860
 EXPOSE 7860
 CMD gunicorn dash_app:server --bind 0.0.0.0:${PORT} --workers 2 --timeout 120
