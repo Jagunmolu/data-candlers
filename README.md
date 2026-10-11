@@ -2,6 +2,18 @@
 
 **YDP Community Datathon 2026, Education track.** A decision tool for state and federal basic-education planners. It ranks Nigeria's 774 Local Government Areas (LGAs) by how far their public schools fall short of the government's own Universal Basic Education (UBE) standard of **35 learners per teacher and per classroom**, sizes the gap in teachers and classrooms, and says plainly how much each ranking can be trusted.
 
+## Submission
+
+| Item | Link |
+|---|---|
+| Working prototype (live app) | [https://data-candlers.streamlit.app](https://data-candlers.streamlit.app) |
+| One-page write-up (PDF) | [`docs/WRITEUP.pdf`](docs/WRITEUP.pdf) |
+| Demo video (under 5 minutes) | [https://youtu.be/9VAyZRlA1CI](https://youtu.be/9VAyZRlA1CI) |
+| Code | this repository |
+| Data sources | [Data sources](#data-sources): all real and public, no synthetic data |
+
+Solo entry, Education track.
+
 ![Need score by LGA, 2024. Darker blue = further from the 35:1 standard; black outline = national top 20; grey = not ranked](docs/img/map_national.png)
 
 ## The problem

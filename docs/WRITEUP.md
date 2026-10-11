@@ -1,6 +1,6 @@
 # Where Should the Next Teacher Go?
 
-**YDP Community Datathon 2026 · Education track · Solo entry** · App: [LIVE_APP_URL] · Repo: [REPO_URL]
+**YDP Datathon 2026 · Education · Solo** · App: [LIVE_APP_URL] · Repo: [REPO_URL]
 
 ## 1. The problem and why it matters
 
