@@ -1,4 +1,4 @@
-"""Where Should the Next Teacher Go? Streamlit app.
+"""Wazobia Teachers (Where should the next teacher go?): Streamlit app.
 
 Loads precomputed tables from data/processed (built by `python -m pipeline.build`),
 so it starts in seconds and makes no network calls at runtime.
@@ -25,7 +25,7 @@ GRADE_TEXT = {
     "Not ranked": "Not ranked: too little or implausible data",
 }
 
-st.set_page_config(page_title="Where Should the Next Teacher Go?", page_icon=":school:", layout="wide")
+st.set_page_config(page_title="Wazobia Teachers", page_icon=":school:", layout="wide")
 # Streamlit's default leaves about 6rem above the title; keep enough for the toolbar.
 st.markdown("<style>[data-testid='stMainBlockContainer']{padding-top:2.5rem;}</style>", unsafe_allow_html=True)
 # Charts follow the viewer's light/dark choice (app menu > Settings > App theme).
@@ -73,7 +73,7 @@ TOP_N = 20
 ranked = lga[lga.confidence != "Not ranked"].copy()
 
 # ---------------------------------------------------------------- header & filters
-st.title("Where should the next teacher go?")
+st.title("Wazobia Teachers: where should the next teacher go?")
 st.markdown(
     "Nigeria's public schools, LGA by LGA, measured against the government's own "
     "**Universal Basic Education standard of 35 learners per teacher and per classroom**. "

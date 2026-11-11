@@ -49,3 +49,11 @@ Dated record of decisions, dead ends and reasons. Newest entries at the bottom o
 - **Bug found and fixed:** the first allocation loop stopped at the first LGA with no teacher shortfall. A high-need LGA can be short of classrooms but not teachers, so moves were undercounted (5.4% before the fix). Added a test for it. Also corrected a summary that counted states with no shortfall as states where "moves close the gap".
 - **Values no dataset holds are inputs, not assumptions:** share of spare teachers who can move (default 100%, labelled an upper bound), JSS target transition (default 100%, the UBE nine-year policy), flag thresholds (in `config/settings.yaml`), and unit costs and budget (no default at all). The budget planner funds LGAs in priority order and shows nothing until costs are entered.
 - App: new tabs "Move or hire?", "Budget planner" and "Beyond the ratio"; LGA detail and top list extended; demo path updated. 35 tests pass. Write-up gains one paragraph and still renders to one page.
+
+## Thursday 12 November 2026 (final stage: Wazobia Teachers, static site)
+
+- **Name:** the product is now Wazobia Teachers. Wa, Zo and Bia mean "come" in Yoruba, Hausa and Igbo: the tool answers where the next teacher should come to.
+- **Hosting:** Netlify serves static files only, so the Streamlit app cannot run there. Built `web/`, a static version with the same six sections in a left-hand menu, violet and yellow with Nigerian green (#008751) accents. `scripts/build_web.py` exports `data/processed` to JSON; the planner maths in `web/logic.js` is a port of `pipeline/insights.py`.
+- **Parity check:** `tests/test_web_logic.py` runs the JavaScript under Node and compares it with the Python: redeployment by state at 100%, 50% and 0% movable share, the budget plan with the demo costs, and JSS places at 80%. All match exactly.
+- Kept the Streamlit app as the reference implementation (renamed only); it still reproduces every number.
+

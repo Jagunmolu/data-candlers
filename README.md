@@ -1,4 +1,6 @@
-# Where Should the Next Teacher Go?
+# Wazobia Teachers: where should the next teacher go?
+
+*Wa* (Yoruba), *Zo* (Hausa) and *Bia* (Igbo) all mean **come**. The tool helps a state answer that call quickly and fairly: where should the next teacher come to?
 
 **YDP Community Datathon 2026, Education track.** A decision tool for state and federal basic-education planners. It ranks Nigeria's 774 Local Government Areas (LGAs) by how far their public schools fall short of the government's own Universal Basic Education (UBE) standard of **35 learners per teacher and per classroom**, sizes the gap in teachers and classrooms, and says plainly how much each ranking can be trusted.
 
@@ -76,6 +78,17 @@ python -m venv .venv
 
 The repo ships the processed tables, so the app starts in seconds with no downloads. Add `?demo=1` to the URL for the fixed demo path.
 
+### Static web app (Netlify)
+
+`web/` is a static version of the same app (HTML, JavaScript and Plotly.js, no server) for hosts such as Netlify that serve files only. Its data is exported from `data/processed` and its planner maths (move or hire, budget, JSS places) is a port of `pipeline/insights.py`, checked against the Python by `tests/test_web_logic.py`.
+
+```bash
+.venv/Scripts/python scripts/build_web.py                       # refresh web/data after a rebuild
+.venv/Scripts/python -m http.server 8765 --directory web        # preview at http://127.0.0.1:8765/?demo=1
+```
+
+`netlify.toml` publishes `web/` with no build step: connect the repository in Netlify, or drag the `web` folder onto app.netlify.com/drop.
+
 To rebuild everything from raw public data (downloads about 90 MB, extracts and reconciles every table, rebuilds both lenses, runs the tests and re-renders the figures):
 
 ```bash
@@ -112,6 +125,7 @@ To rebuild everything from raw public data (downloads about 90 MB, extracts and 
 
 ```
 streamlit_app.py      the app (decision, move or hire, budget, beyond the ratio, state context, method)
+web/                  static version of the app for Netlify; scripts/build_web.py exports its data
 figures.py            chart builders shared by the app and scripts/render_figures.py
 pipeline/             extraction, crosswalk, Lens 1 index, insights, Lens 2 test, validation, build
 config/               settings.yaml (weights, thresholds, partner column map), alias and reason tables

@@ -1,0 +1,16 @@
+# Wazobia Teachers static site. Netlify serves web/ as-is: the JSON in web/data is
+# exported from data/processed by scripts/build_web.py and committed, so no build runs here.
+[build]
+  publish = "web"
+  command = ""
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/data/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
