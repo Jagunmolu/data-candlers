@@ -284,7 +284,7 @@
     ];
     const rows = t.map((r, i) => Object.assign({ pos: i + 1 }, r));
 
-    let html = `<p class="lede">Nigeria's public schools, LGA by LGA, measured against the government's own <strong>Universal Basic Education standard of 35 learners per teacher and per classroom</strong>. Every ranking carries a <strong>confidence grade</strong> showing how much of it rests on complete data.</p>`;
+    let html = `<p class="lede one-line">Nigeria's public schools, LGA by LGA, measured against the government's own <strong>Universal Basic Education standard of 35 learners per teacher and per classroom</strong>.</p>`;
     if (!t.length) {
       html += `<p class="warn">No ranked LGAs in ${esc(scope)} for the selected grades. This usually means too few schools returned census forms; see "Not ranked" below.</p>`;
     } else {

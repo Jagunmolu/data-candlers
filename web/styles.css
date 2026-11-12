@@ -107,6 +107,11 @@ fieldset.grades input { accent-color: var(--violet-600); }
 /* ---------- content blocks ---------- */
 .lede { font-size: 1.02rem; color: var(--muted); max-width: 80ch; margin-top: 18px; }
 .lede strong { color: var(--ink); }
+/* a single-sentence lede kept on one line on wide screens; text shrinks slightly to fit */
+@media (min-width: 1280px) {
+  .lede.one-line { max-width: none; white-space: nowrap; font-size: min(1.02rem, calc((100vw - 360px) / 80)); }
+  .collapsed .lede.one-line { font-size: min(1.02rem, calc((100vw - 150px) / 80)); }
+}
 .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin: 18px 0 8px; }
 .kpi { background: var(--violet-50); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; }
 .kpi .label { color: var(--muted); font-size: .85rem; font-weight: 500; }
