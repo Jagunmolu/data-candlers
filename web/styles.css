@@ -41,23 +41,27 @@ p { margin: .5rem 0; }
   display: flex; flex-direction: column; padding: 20px 14px;
 }
 .shell { transition: grid-template-columns .2s ease; }
-.side-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 4px 20px 8px; }
+.side-head { display: flex; align-items: center; gap: 8px; padding: 4px 18px 20px 8px; }
 .brand { display: flex; gap: 10px; align-items: center; color: var(--white); text-decoration: none; min-width: 0; }
 .brand img { flex: none; width: 36px; height: 36px; }
 .brand strong { display: block; font-family: var(--display); font-size: 1.1rem; white-space: nowrap; }
+/* the toggle is a round tab sitting on the menu's right edge, half outside it */
 .collapse-btn {
-  flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; cursor: pointer;
-  background: var(--violet-800); color: var(--white); border: 0;
+  position: fixed; top: 26px; left: calc(284px - 15px); z-index: 30;
+  display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; cursor: pointer;
+  background: var(--yellow); color: var(--violet-950); border: 2px solid var(--white);
+  box-shadow: 0 2px 8px rgba(31, 11, 56, .3); transition: left .2s ease, background .15s ease;
 }
-.collapse-btn svg { width: 22px; height: 22px; fill: currentColor; transition: transform .2s ease; }
-.collapse-btn:hover { background: var(--yellow); color: var(--violet-950); }
+.collapse-btn svg { width: 20px; height: 20px; fill: currentColor; transition: transform .2s ease; }
+.collapse-btn:hover { background: var(--yellow-600); }
 .collapse-btn:focus-visible { outline: 2px solid var(--yellow); outline-offset: 2px; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* collapsed menu: an icon rail */
 .shell.collapsed { grid-template-columns: 76px minmax(0, 1fr); }
 .collapsed .sidebar { padding: 20px 10px; }
-.collapsed .side-head { flex-direction: column; padding: 4px 0 16px; gap: 12px; }
+.collapsed .side-head { justify-content: center; padding: 4px 0 16px; }
+.shell.collapsed .collapse-btn { left: calc(76px - 15px); }
 .collapsed .label, .collapsed .side-foot { display: none; }
 .collapsed #nav a { justify-content: center; padding: 11px 0; }
 .collapsed .collapse-btn svg { transform: rotate(180deg); }
@@ -127,8 +131,18 @@ fieldset.grades input { accent-color: var(--violet-600); }
 .btn:focus-visible { outline: 2px solid var(--violet-600); outline-offset: 2px; }
 
 /* ---------- tables ---------- */
-.table-tools { display: flex; justify-content: flex-start; margin: 0 0 8px; }
-.table-tools .btn { margin-top: 0; }
+/* download button: top right, on the heading's line when the table has one */
+.table-tools, .table-head { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px 16px; margin: 0 0 8px; }
+.table-head { justify-content: space-between; margin: 2rem 0 .75rem; }
+.table-head h2 { margin: 0; }
+.table-tools .btn, .table-head .btn { margin-top: 0; }
+/* frozen leading columns (S/N, LGA, State) stay put while the rest scroll */
+th.frozen, td.frozen { position: sticky; z-index: 2; }
+tbody td.frozen { background: var(--white); }
+thead th.frozen { z-index: 4; }
+tbody tr:nth-child(even) td.frozen { background: var(--violet-50); }
+tbody tr:hover td.frozen { background: var(--yellow-100); }
+.table-wrap.scrolled .frozen-last { box-shadow: 6px 0 8px -6px rgba(31, 11, 56, .35); }
 .table-box { position: relative; }
 .table-wrap { overflow: auto; border: 1px solid var(--line); border-radius: var(--radius); max-height: 560px; scroll-behavior: auto; }
 .scroll-btn {
@@ -203,6 +217,8 @@ input[type=range] { accent-color: var(--violet-600); width: 100%; }
   .collapsed .side-head { flex-direction: row; padding: 2px 4px; }
   .collapsed .label { display: inline; }
   .collapsed #nav { display: none; }
+  .collapse-btn, .shell.collapsed .collapse-btn { top: 12px; left: auto; right: 14px; }
+  .side-head { padding-right: 48px; }
   .collapse-btn svg { transform: rotate(90deg); }
   .collapsed .collapse-btn svg { transform: rotate(-90deg); }
   main { padding: 0 16px 40px; }

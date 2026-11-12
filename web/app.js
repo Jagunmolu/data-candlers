@@ -65,15 +65,21 @@
    * csv = [filename, label?] puts a download button above the table, on the left. */
   const tables = {};
   const ARROW = (d) => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${d < 0 ? "M15.4 7.4 14 6l-6 6 6 6 1.4-1.4-4.6-4.6z" : "M8.6 16.6 10 18l6-6-6-6-1.4 1.4 4.6 4.6z"}"/></svg>`;
+  const FREEZE = new Set(["pos", "pri", "adm2_name", "adm1_name"]);
   function table(id, rows, cols, maxH, csv) {
     tables[id] = { rows, cols };
-    const head = cols.map((c) => `<th class="${c.num ? "num" : ""}"${c.title ? ` title="${esc(c.title)}"` : ""}>${esc(c.label)}</th>`).join("");
-    const body = rows.map((r) => "<tr>" + cols.map((c) => {
+    let nFreeze = 0;
+    while (nFreeze < cols.length - 1 && FREEZE.has(cols[nFreeze].key)) nFreeze++;
+    const fz = (i) => (i < nFreeze ? ` frozen${i === nFreeze - 1 ? " frozen-last" : ""}` : "");
+    const head = cols.map((c, i) => `<th class="${c.num ? "num" : ""}${fz(i)}"${c.title ? ` title="${esc(c.title)}"` : ""}>${esc(c.label)}</th>`).join("");
+    const body = rows.map((r) => "<tr>" + cols.map((c, i) => {
       const v = r[c.key];
       const content = c.html ? c.html(v, r) : esc(c.fmt ? c.fmt(v, r) : v ?? "");
-      return `<td class="${c.num ? "num" : ""}">${content}</td>`;
+      return `<td class="${c.num ? "num" : ""}${fz(i)}">${content}</td>`;
     }).join("") + "</tr>").join("");
-    const tools = csv ? `<div class="table-tools">${csvButton(id, csv[0], csv[1])}</div>` : "";
+    // csv = [filename, label?, heading?]: the button sits top right, on the heading's line if one is given.
+    const tools = !csv ? "" : csv[2] ? `<div class="table-head"><h2>${csv[2]}</h2>${csvButton(id, csv[0], csv[1])}</div>`
+      : `<div class="table-tools">${csvButton(id, csv[0], csv[1])}</div>`;
     return `${tools}<div class="table-box"><button type="button" class="scroll-btn left" data-dir="-1" aria-label="Scroll table left" hidden>${ARROW(-1)}</button><div class="table-wrap"${maxH ? ` style="max-height:${maxH}px"` : ""}><table id="${id}"><thead><tr>${head}</tr></thead><tbody>${body || `<tr><td colspan="${cols.length}">Nothing to show for this filter.</td></tr>`}</tbody></table></div><button type="button" class="scroll-btn right" data-dir="1" aria-label="Scroll table right" hidden>${ARROW(1)}</button></div>`;
   }
 
@@ -83,9 +89,24 @@
     root.querySelectorAll(".table-box").forEach((box) => {
       const w = box.querySelector(".table-wrap");
       const max = w.scrollWidth - w.clientWidth;
+      freeze(box, w);
       box.querySelector(".scroll-btn.left").hidden = !(max > 2 && w.scrollLeft > 2);
       box.querySelector(".scroll-btn.right").hidden = !(max > 2 && w.scrollLeft < max - 2);
     });
+  }
+  // Sticky offsets for frozen columns, measured from the rendered widths.
+  function freeze(box, w) {
+    const ths = [...w.querySelectorAll("thead th.frozen")];
+    let left = 0;
+    ths.forEach((th, i) => {
+      if (th.dataset.left !== String(left)) {
+        th.dataset.left = left;
+        w.querySelectorAll(`tr > :nth-child(${i + 1})`).forEach((c) => { c.style.left = left + "px"; });
+      }
+      left += th.offsetWidth;
+    });
+    w.classList.toggle("scrolled", w.scrollLeft > 2);
+    box.querySelector(".scroll-btn.left").style.left = (ths.length ? left - 6 : -6) + "px";
   }
   let glide = null;
   function stopGlide() { if (glide) cancelAnimationFrame(glide.raf); glide = null; }
@@ -245,7 +266,7 @@
     const t = top();
     const scope = scopeName();
     const topCols = [
-      { key: "pos", label: "#", num: true },
+      { key: "pos", label: "S/N", num: true },
       { key: "adm2_name", label: "LGA" },
       { key: "adm1_name", label: "State" },
       { key: "ltr", label: "Learners per teacher", num: true, fmt: (x) => fmtInt(x), csv: r0, title: "Standard is 35." },
@@ -272,8 +293,7 @@
         ${kpi("Classrooms needed", fmtInt(sum(t, (r) => r.classrooms_needed)), "to reach 35 learners per classroom")}
         ${kpi("Learners in these LGAs", fmtInt(sum(t, (r) => r.learners)), "public schools, 2024")}
       </div>
-      <h2>The ${t.length} LGAs most in need in ${esc(scope)}</h2>
-      ${table("t-top", rows, topCols, null, [`priority_lgas_${slug(scope)}.csv`])}
+      ${table("t-top", rows, topCols, null, [`priority_lgas_${slug(scope)}.csv`, undefined, `The ${t.length} LGAs most in need in ${esc(scope)}`])}
       <p class="caption">${VINTAGE} The ranking compares LGAs; it does not explain causes.</p>`;
     }
     html += `<h2>Need across LGAs</h2><div class="card map-card"><button type="button" id="map-reset" class="map-reset" title="Return the map to its original size and position"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5V2L7 6l5 4V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z"/></svg>Reset map</button><div id="map" class="chart" style="min-height:560px"></div></div>
@@ -364,12 +384,12 @@
     } else if (scoped.length) {
       const moves = WT.allocateMoves(S.lgas, S.movable);
       const lg = S.lgas.filter((r) => r.adm1_name === S.state && WT.isRanked(r)).map((r) => Object.assign({}, r, moves.get(r.adm2_pcode))).sort((a, b) => b.need_score - a.need_score);
-      html += `<h2>LGAs in ${esc(S.state)}: who gives, who receives</h2>${table("t-moves", lg, [
+      html += `${table("t-moves", lg, [
         { key: "adm2_name", label: "LGA" }, { key: "ltr", label: "Learners per teacher", num: true, fmt: fmtInt, csv: r0 },
         { key: "teachers_needed", label: "Teachers short", num: true, fmt: fmtInt }, { key: "teachers_spare", label: "Spare teachers", num: true, fmt: fmtInt },
         { key: "moved_in", label: "Receives from moves", num: true, fmt: fmtInt }, { key: "moved_out", label: "Gives (approx.)", num: true, fmt: fmtInt, csv: r0 },
         { key: "to_hire", label: "Still to hire", num: true, fmt: fmtInt }, { key: "need_score", label: "Need score", num: true, fmt: fmtInt, csv: r0 },
-      ], null, [`move_or_hire_${slug(S.state)}.csv`, "Download this plan (CSV)"])}
+      ], null, [`move_or_hire_${slug(S.state)}.csv`, "Download this plan (CSV)", `LGAs in ${esc(S.state)}: who gives, who receives`])}
         <p class="caption">Donors give in proportion to their spare teachers and keep enough for 35:1. ${VINTAGE}</p>`;
     }
     html += `<details><summary>All states</summary>${table("t-allstates", byState, [
