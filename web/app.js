@@ -61,9 +61,11 @@
     return `<div class="kpi${accent ? " accent" : ""}"><div class="label">${esc(label)}</div><div class="value">${esc(value)}</div>${sub ? `<div class="sub">${esc(sub)}</div>` : ""}</div>`;
   }
 
-  /** cols: [{key, label, num?, fmt?(v,row), html?(v,row)}]. Returns HTML and remembers rows for CSV. */
+  /** cols: [{key, label, num?, fmt?(v,row), html?(v,row)}]. Returns HTML and remembers rows for CSV.
+   * csv = [filename, label?] puts a download button above the table, on the left. */
   const tables = {};
-  function table(id, rows, cols, maxH) {
+  const ARROW = (d) => `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${d < 0 ? "M15.4 7.4 14 6l-6 6 6 6 1.4-1.4-4.6-4.6z" : "M8.6 16.6 10 18l6-6-6-6-1.4 1.4 4.6 4.6z"}"/></svg>`;
+  function table(id, rows, cols, maxH, csv) {
     tables[id] = { rows, cols };
     const head = cols.map((c) => `<th class="${c.num ? "num" : ""}"${c.title ? ` title="${esc(c.title)}"` : ""}>${esc(c.label)}</th>`).join("");
     const body = rows.map((r) => "<tr>" + cols.map((c) => {
@@ -71,8 +73,55 @@
       const content = c.html ? c.html(v, r) : esc(c.fmt ? c.fmt(v, r) : v ?? "");
       return `<td class="${c.num ? "num" : ""}">${content}</td>`;
     }).join("") + "</tr>").join("");
-    return `<div class="table-wrap"${maxH ? ` style="max-height:${maxH}px"` : ""}><table id="${id}"><thead><tr>${head}</tr></thead><tbody>${body || `<tr><td colspan="${cols.length}">Nothing to show for this filter.</td></tr>`}</tbody></table></div>`;
+    const tools = csv ? `<div class="table-tools">${csvButton(id, csv[0], csv[1])}</div>` : "";
+    return `${tools}<div class="table-box"><button type="button" class="scroll-btn left" data-dir="-1" aria-label="Scroll table left" hidden>${ARROW(-1)}</button><div class="table-wrap"${maxH ? ` style="max-height:${maxH}px"` : ""}><table id="${id}"><thead><tr>${head}</tr></thead><tbody>${body || `<tr><td colspan="${cols.length}">Nothing to show for this filter.</td></tr>`}</tbody></table></div><button type="button" class="scroll-btn right" data-dir="1" aria-label="Scroll table right" hidden>${ARROW(1)}</button></div>`;
   }
+
+  // ---------------------------------------------------------------- table scroll arrows
+  // Hovering an arrow glides the table sideways; clicking jumps one screen of columns.
+  function updateScrollers(root = document) {
+    root.querySelectorAll(".table-box").forEach((box) => {
+      const w = box.querySelector(".table-wrap");
+      const max = w.scrollWidth - w.clientWidth;
+      box.querySelector(".scroll-btn.left").hidden = !(max > 2 && w.scrollLeft > 2);
+      box.querySelector(".scroll-btn.right").hidden = !(max > 2 && w.scrollLeft < max - 2);
+    });
+  }
+  let glide = null;
+  function stopGlide() { if (glide) cancelAnimationFrame(glide.raf); glide = null; }
+  function startGlide(btn) {
+    stopGlide();
+    const box = btn.parentElement;
+    const w = box.querySelector(".table-wrap");
+    const dir = Number(btn.dataset.dir);
+    glide = { btn, raf: 0 };
+    const step = () => {
+      w.scrollLeft += dir * 9;
+      updateScrollers(box.parentElement);
+      if (glide) glide.raf = requestAnimationFrame(step);
+    };
+    glide.raf = requestAnimationFrame(step);
+  }
+  document.addEventListener("mouseover", (e) => {
+    const b = e.target.closest(".scroll-btn");
+    if (b && (!glide || glide.btn !== b)) startGlide(b);
+  });
+  document.addEventListener("mouseout", (e) => {
+    const b = e.target.closest(".scroll-btn");
+    if (b && !b.contains(e.relatedTarget)) stopGlide();
+  });
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest(".scroll-btn");
+    if (!b) return;
+    stopGlide();
+    const w = b.parentElement.querySelector(".table-wrap");
+    w.scrollBy({ left: Number(b.dataset.dir) * w.clientWidth * 0.8, behavior: "smooth" });
+  });
+  document.addEventListener("scroll", (e) => {
+    if (e.target.classList && e.target.classList.contains("table-wrap")) updateScrollers(e.target.parentElement.parentElement);
+  }, true);
+  document.addEventListener("toggle", () => updateScrollers(), true);
+  window.addEventListener("resize", () => updateScrollers());
   function csvButton(id, filename, label = "Download this list (CSV)") {
     return `<button class="btn" data-csv="${id}" data-file="${esc(filename)}"><svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11 3h2v9.2l3.6-3.6 1.4 1.4-6 6-6-6 1.4-1.4 3.6 3.6V3zM4 19h16v2H4z"/></svg>${esc(label)}</button>`;
   }
@@ -224,11 +273,10 @@
         ${kpi("Learners in these LGAs", fmtInt(sum(t, (r) => r.learners)), "public schools, 2024")}
       </div>
       <h2>The ${t.length} LGAs most in need in ${esc(scope)}</h2>
-      ${table("t-top", rows, topCols)}
-      ${csvButton("t-top", `priority_lgas_${slug(scope)}.csv`)}
+      ${table("t-top", rows, topCols, null, [`priority_lgas_${slug(scope)}.csv`])}
       <p class="caption">${VINTAGE} The ranking compares LGAs; it does not explain causes.</p>`;
     }
-    html += `<h2>Need across LGAs</h2><div class="card"><div id="map" class="chart" style="min-height:560px"></div></div>
+    html += `<h2>Need across LGAs</h2><div class="card map-card"><button type="button" id="map-reset" class="map-reset" title="Return the map to its original size and position"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5V2L7 6l5 4V7a6 6 0 1 1-6 6H4a8 8 0 1 0 8-8z"/></svg>Reset map</button><div id="map" class="chart" style="min-height:560px"></div></div>
       <p class="caption">Darker violet = further from the 35:1 standard relative to other LGAs. Dark outline = the list above. Grey = not ranked (too little or implausible data) or outside the filter. ${VINTAGE}</p>`;
 
     // LGA detail
@@ -242,12 +290,12 @@
     if (S.state !== "All of Nigeria") nr = nr.filter((r) => r.adm1_name === S.state);
     nr.sort((a, b) => a.adm1_name.localeCompare(b.adm1_name) || a.adm2_name.localeCompare(b.adm2_name));
     html += `<details id="not-ranked"><summary>Not ranked: ${nrTotal} LGAs and why${S.state !== "All of Nigeria" ? ` (${nr.length} in ${esc(S.state)})` : ""}</summary>
-      ${table("t-nr", nr, [{ key: "adm2_name", label: "LGA" }, { key: "adm1_name", label: "State" }, { key: "not_ranked_reason", label: "Reason" }], 420)}
-      ${csvButton("t-nr", `not_ranked_${slug(scope)}.csv`, "Download (CSV)")}
+      ${table("t-nr", nr, [{ key: "adm2_name", label: "LGA" }, { key: "adm1_name", label: "State" }, { key: "not_ranked_reason", label: "Reason" }], 420, [`not_ranked_${slug(scope)}.csv`, "Download (CSV)"])}
       <p class="caption">Listed rather than estimated. Treat missing returns as a finding: need here is unknown, not low.</p></details>`;
 
     el.innerHTML = html;
     needMap($("#map"), v, t);
+    $("#map-reset").addEventListener("click", () => { Plotly.purge($("#map")); needMap($("#map"), v, t); });
     renderLgaDetail();
     $("#pick").addEventListener("change", (e) => { S.pickLga = e.target.value; S._pickTouched = true; renderLgaDetail(); });
   }
@@ -292,6 +340,7 @@
     html += `<details><summary>More about this LGA (2024 census)</summary>${table("t-ctx", ctx, [{ key: "m", label: "Measure" }, { key: "val", label: "Value", num: true }])}
       <p class="caption">Context, not part of the score. "All schools" measures are published only for public and private schools together. JSS and private figures are shown only where enough census forms came back. ${VINTAGE}</p></details>`;
     $("#lga-detail").innerHTML = html;
+    updateScrollers($("#lga-detail"));
   }
 
   // ---------------------------------------------------------------- section: move or hire
@@ -320,7 +369,7 @@
         { key: "teachers_needed", label: "Teachers short", num: true, fmt: fmtInt }, { key: "teachers_spare", label: "Spare teachers", num: true, fmt: fmtInt },
         { key: "moved_in", label: "Receives from moves", num: true, fmt: fmtInt }, { key: "moved_out", label: "Gives (approx.)", num: true, fmt: fmtInt, csv: r0 },
         { key: "to_hire", label: "Still to hire", num: true, fmt: fmtInt }, { key: "need_score", label: "Need score", num: true, fmt: fmtInt, csv: r0 },
-      ])}${csvButton("t-moves", `move_or_hire_${slug(S.state)}.csv`, "Download this plan (CSV)")}
+      ], null, [`move_or_hire_${slug(S.state)}.csv`, "Download this plan (CSV)"])}
         <p class="caption">Donors give in proportion to their spare teachers and keep enough for 35:1. ${VINTAGE}</p>`;
     }
     html += `<details><summary>All states</summary>${table("t-allstates", byState, [
@@ -328,7 +377,7 @@
       { key: "shortfall", label: "Teachers short", num: true, fmt: fmtInt }, { key: "spare", label: "Spare teachers", num: true, fmt: fmtInt },
       { key: "covered_by_moves", label: "Covered by moves", num: true, fmt: fmtInt }, { key: "to_hire", label: "Still to hire", num: true, fmt: fmtInt },
       { key: "share_covered", label: "Share covered", html: (x) => (isNum(x) ? `<span class="bar-cell"><span class="track"><span class="fill" style="width:${Math.min(100, 100 * x)}%"></span></span>${fmtPct(x)}</span>` : ""), csv: (x) => (isNum(x) ? x.toFixed(3) : "") },
-    ], 480)}${csvButton("t-allstates", "move_or_hire_all_states.csv", "Download (CSV)")}</details>
+    ], 480, ["move_or_hire_all_states.csv", "Download (CSV)"])}</details>
       <p class="caption">A spare teacher may teach a subject or level that a short LGA does not need, so the moves shown are an upper bound at your chosen share.</p>`;
     el.innerHTML = html;
     if ($("#moves")) movesBar($("#moves"), byState);
@@ -384,10 +433,11 @@
           { key: "classrooms_needed", label: "Classrooms needed", num: true, fmt: fmtInt }, { key: "classrooms_funded", label: "Classrooms funded", num: true, fmt: fmtInt },
           { key: "cost_full_gap", label: "Cost of full gap (₦)", num: true, fmt: fmtInt, csv: r0 }, { key: "cost_funded", label: "Funded (₦)", num: true, fmt: fmtInt, csv: r0 },
           { key: "status", label: "Status", html: (s) => `<span class="${stCls(s)}">${esc(s)}</span>`, csv: (s) => s },
-        ]) + csvButton("t-budget", `budget_${slug(scope)}.csv`, "Download this budget (CSV)")
+        ], null, [`budget_${slug(scope)}.csv`, "Download this budget (CSV)"])
           + `<p class="caption">Costs are your inputs, not data. Gaps: ${VINTAGE} Each LGA's full gap is funded before the next; the last LGA reached is funded in part, teachers first.</p>`;
       }
       $("#b-out").innerHTML = out;
+      updateScrollers($("#b-out"));
     };
     const bind = (id, key) => $(id).addEventListener("input", (e) => { B[key] = e.target.value; update(); });
     bind("#b-t", "t"); bind("#b-c", "c"); bind("#b-b", "b");
@@ -409,8 +459,8 @@
     const flagged = (id, rows, extra, file) => {
       const d = rows.slice().sort((a, b) => b.need_score - a.need_score);
       return table(id, d, [{ key: "adm2_name", label: "LGA" }, { key: "adm1_name", label: "State" }, { key: "rank", label: "National rank", num: true },
-        { key: "ltr", label: "Learners per teacher", num: true, fmt: fmtInt, csv: r0 }, ...extra, { key: "confidence", label: "Confidence", html: gradeHtml, csv: (x) => x }], 340)
-        + csvButton(id, `${file}_${slug(scope)}.csv`, "Download (CSV)");
+        { key: "ltr", label: "Learners per teacher", num: true, fmt: fmtInt, csv: r0 }, ...extra, { key: "confidence", label: "Confidence", html: gradeHtml, csv: (x) => x }], 340,
+        [`${file}_${slug(scope)}.csv`, "Download (CSV)"]);
     };
     const slider = (id, label, min, max, step, val, suffix) => `<div class="controls"><label class="slider">${label} <output id="${id}-out">${val}${suffix}</output><input id="${id}" type="range" min="${min}" max="${max}" step="${step}" value="${val}"></label></div>`;
 
@@ -486,7 +536,7 @@
         { key: "reading", label: "Reading 7-14 (%)", num: true, fmt: f1 }, { key: "numeracy", label: "Numeracy 7-14 (%)", num: true, fmt: f1 },
         { key: "oos_primary", label: "Primary out-of-school (%)", num: true, fmt: f1 }, { key: "need_score_state", label: "Average LGA need score", num: true, fmt: f1 },
         { key: "n_ranked_lgas", label: "LGAs ranked", num: true },
-      ], 520)}${csvButton("t-states", "state_context.csv", "Download (CSV)")}`;
+      ], 520, ["state_context.csv", "Download (CSV)"])}`;
     stateScatter($("#sc"));
   }
 
@@ -544,6 +594,7 @@
     document.querySelectorAll("#nav a").forEach((a) => a.classList.toggle("active", a.dataset.route === S.route));
     document.querySelectorAll("#nav a").forEach((a) => (a.dataset.route === S.route ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current")));
     RENDER[S.route](el);
+    requestAnimationFrame(() => updateScrollers());
   }
   function routeFromHash() {
     const r = (location.hash.match(/^#\/(\w+)/) || [])[1];
@@ -555,6 +606,27 @@
     if (b) downloadCsv(b.dataset.csv, b.dataset.file);
   });
 
+  function initCollapse() {
+    const shell = $(".shell"), btn = $("#collapse");
+    const set = (collapsed) => {
+      shell.classList.toggle("collapsed", collapsed);
+      btn.setAttribute("aria-expanded", String(!collapsed));
+      const label = collapsed ? "Expand menu" : "Collapse menu";
+      btn.title = label;
+      btn.querySelector(".sr-only").textContent = label;
+    };
+    let saved = false;
+    try { saved = localStorage.getItem("wt-menu-collapsed") === "1"; } catch (e) { /* storage blocked */ }
+    set(saved);
+    btn.addEventListener("click", () => {
+      const now = !shell.classList.contains("collapsed");
+      set(now);
+      try { localStorage.setItem("wt-menu-collapsed", now ? "1" : "0"); } catch (e) { /* storage blocked */ }
+      // Charts and tables re-measure after the menu width animates.
+      setTimeout(() => { document.querySelectorAll(".js-plotly-plot").forEach((el) => Plotly.Plots.resize(el)); updateScrollers(); }, 230);
+    });
+  }
+
   async function init() {
     const get = (f) => fetch("data/" + f).then((r) => { if (!r.ok) throw new Error(f + " " + r.status); return r.json(); });
     try {
@@ -564,6 +636,7 @@
       return;
     }
     const states = [...new Set(S.lgas.map((r) => r.adm1_name))].sort();
+    initCollapse();
     $("#state").innerHTML = ["All of Nigeria", ...states].map((s) => `<option>${esc(s)}</option>`).join("");
     $("#ranked-count").textContent = `${ranked().length} of ${S.lgas.length} LGAs ranked`;
     $("#ranked-count").title = "The rest are listed under 'Not ranked' with the reason.";

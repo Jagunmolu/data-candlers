@@ -14,20 +14,23 @@
 <body>
   <div class="shell">
     <aside class="sidebar" aria-label="Sections">
-      <a class="brand" href="#/where">
-        <img src="favicon.svg" alt="" width="40" height="40">
-        <span>
-          <strong>Wazobia Teachers</strong>
-          <small>Wa · Zo · Bia: come.</small>
-        </span>
-      </a>
+      <div class="side-head">
+        <a class="brand" href="#/where" title="Wazobia Teachers">
+          <img src="favicon.svg" alt="" width="40" height="40">
+          <strong class="label">Wazobia Teachers</strong>
+        </a>
+        <button id="collapse" class="collapse-btn" type="button" aria-expanded="true" aria-controls="nav" title="Collapse menu">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.4 7.4 14 6l-6 6 6 6 1.4-1.4-4.6-4.6z"/></svg>
+          <span class="sr-only">Collapse menu</span>
+        </button>
+      </div>
       <nav id="nav">
-        <a href="#/where" data-route="where"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg>Where to send teachers</a>
-        <a href="#/move" data-route="move"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11l-3-3 1.4-1.4L22 8l-5.6 5.4L15 12l3-3H7V7zm10 10H6l3 3-1.4 1.4L2 16l5.6-5.4L9 12l-3 3h11v2z"/></svg>Move or hire?</a>
-        <a href="#/budget" data-route="budget"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v12H3V6zm2 2v8h14V8H5zm7 1.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM6 9h2v2H6V9zm10 4h2v2h-2v-2z"/></svg>Budget planner</a>
-        <a href="#/beyond" data-route="beyond"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16v2H4v-2zm1-2V9h3v8H5zm5 0V4h3v13h-3zm5 0v-6h3v6h-3z"/></svg>Beyond the ratio</a>
-        <a href="#/context" data-route="context"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 1 9l11 6 9-4.9V17h2V9L12 3zm-6 9.2V16c0 1.7 2.7 3 6 3s6-1.3 6-3v-3.8l-6 3.3-6-3.3z"/></svg>State outcome context</a>
-        <a href="#/method" data-route="method"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h9l5 5v15H6V2zm8 1.5V8h4.5L14 3.5zM8 12v2h8v-2H8zm0 4v2h8v-2H8z"/></svg>Method, data and limits</a>
+        <a href="#/where" data-route="where" title="Where to send teachers"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg><span class="label">Where to send teachers</span></a>
+        <a href="#/move" data-route="move" title="Move or hire?"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h11l-3-3 1.4-1.4L22 8l-5.6 5.4L15 12l3-3H7V7zm10 10H6l3 3-1.4 1.4L2 16l5.6-5.4L9 12l-3 3h11v2z"/></svg><span class="label">Move or hire?</span></a>
+        <a href="#/budget" data-route="budget" title="Budget planner"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v12H3V6zm2 2v8h14V8H5zm7 1.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM6 9h2v2H6V9zm10 4h2v2h-2v-2z"/></svg><span class="label">Budget planner</span></a>
+        <a href="#/beyond" data-route="beyond" title="Beyond the ratio"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19h16v2H4v-2zm1-2V9h3v8H5zm5 0V4h3v13h-3zm5 0v-6h3v6h-3z"/></svg><span class="label">Beyond the ratio</span></a>
+        <a href="#/context" data-route="context" title="State outcome context"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 1 9l11 6 9-4.9V17h2V9L12 3zm-6 9.2V16c0 1.7 2.7 3 6 3s6-1.3 6-3v-3.8l-6 3.3-6-3.3z"/></svg><span class="label">State outcome context</span></a>
+        <a href="#/method" data-route="method" title="Method, data and limits"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h9l5 5v15H6V2zm8 1.5V8h4.5L14 3.5zM8 12v2h8v-2H8zm0 4v2h8v-2H8z"/></svg><span class="label">Method, data and limits</span></a>
       </nav>
       <div class="side-foot">
         <p>Data: Federal Ministry of Education, Annual School Census 2024 (public schools).</p>
