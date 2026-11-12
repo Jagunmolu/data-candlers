@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 STEPS = [
     [sys.executable, "scripts/fetch_data.py"],
     [sys.executable, "-m", "pipeline.build"],
+    [sys.executable, "scripts/build_db.py"],
     [sys.executable, "-m", "pytest", "-q"],
     [sys.executable, "scripts/render_figures.py"],
     [sys.executable, "scripts/render_writeup.py"],

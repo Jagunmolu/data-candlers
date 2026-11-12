@@ -61,7 +61,7 @@ Values no dataset holds (share of spare teachers who can move, JSS target, thres
 | 1,000 random alternative weightings | 15 of the top 20 stay in the top 20 at least 80% of the time |
 | Agreement with a purely statistical summary (PC1) | Spearman 0.99 |
 | States with higher need vs MICS6 2021 (never an input) | more out of school (+0.46), lower reading (-0.49), lower numeracy (-0.59); 35 states, all p < 0.01 |
-| 2024 census vs UBEC 2018 (state) and NMIS 2014 (LGA) | +0.61 and +0.57 |
+| 2024 census vs UBEC 2018 (state) and NMIS 2014 (LGA) | +0.61 and +0.53 (637 LGAs) |
 | Do reported resources predict WAEC results? | **No** better than the national average out of sample. So no state is labelled an over- or under-performer, and LGAs are ranked on measured gaps, not predicted results |
 
 ![WAEC results vs foundational reading by state](docs/img/state_context.png)
@@ -95,6 +95,10 @@ To rebuild everything from raw public data (downloads about 90 MB, extracts and 
 .venv/Scripts/python scripts/reproduce.py
 ```
 
+### Database
+
+`db/schema.sql` defines a SQLite data model: states and LGAs, census figures by year and source, each ranking run with its grades and not-ranked reasons, and saved planner scenarios with a table for recording actual postings. `python scripts/build_db.py` builds `data/processed/wazobia.sqlite` from the processed tables; `tests/test_database.py` checks it holds the same numbers. See [`docs/DATABASE.md`](docs/DATABASE.md).
+
 **Using fresher data from a partner:** set `lga_input.adapter: csv` in `config/settings.yaml`, map the partner's column names, and rebuild. No code changes.
 
 ## Data sources
@@ -126,12 +130,13 @@ To rebuild everything from raw public data (downloads about 90 MB, extracts and 
 ```
 streamlit_app.py      the app (decision, move or hire, budget, beyond the ratio, state context, method)
 web/                  static version of the app for Netlify; scripts/build_web.py exports its data
+db/                   SQLite schema; scripts/build_db.py builds data/processed/wazobia.sqlite
 figures.py            chart builders shared by the app and scripts/render_figures.py
 pipeline/             extraction, crosswalk, Lens 1 index, insights, Lens 2 test, validation, build
 config/               settings.yaml (weights, thresholds, partner column map), alias and reason tables
 data/processed/       tables the app loads (committed)
 reports/              reconciliation and unmatched-record reports
-tests/                pytest: reconciliation, crosswalk, index logic, insights
-docs/                 data audit, write-up, figures
+tests/                pytest: reconciliation, crosswalk, index logic, insights, web parity, database
+docs/                 data audit, data dictionary, database, write-up, figures
 BUILD_LOG.md          dated record of every decision and dead end
 ```

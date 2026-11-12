@@ -1,6 +1,6 @@
 # Data dictionary
 
-Processed tables in `data/processed/`, all rebuilt by `python -m pipeline.build`. Keys are OCHA COD-AB P-codes (`adm1_pcode` state, `adm2_pcode` LGA).
+Processed tables in `data/processed/`, all rebuilt by `python -m pipeline.build`. The same data is also loaded into a SQLite database by `scripts/build_db.py`; see `DATABASE.md`. Keys are OCHA COD-AB P-codes (`adm1_pcode` state, `adm2_pcode` LGA).
 
 ## lga_index.parquet (774 rows, one per LGA)
 
